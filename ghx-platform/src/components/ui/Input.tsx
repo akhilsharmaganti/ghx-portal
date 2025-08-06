@@ -1,10 +1,11 @@
 // Single Responsibility: Reusable input component
 import React from 'react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label?: string;
   error?: string;
   helperText?: string;
+  onChange?: (value: string) => void;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -12,6 +13,7 @@ export const Input: React.FC<InputProps> = ({
   error,
   helperText,
   className = '',
+  onChange,
   ...props
 }) => {
   const baseClasses = `
@@ -24,6 +26,12 @@ export const Input: React.FC<InputProps> = ({
     ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
     : 'border-gray-300';
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(e.target.value);
+    }
+  };
+
   return (
     <div className="mb-4">
       {label && (
@@ -33,6 +41,7 @@ export const Input: React.FC<InputProps> = ({
       )}
       <input
         className={`${baseClasses} ${errorClasses} ${className}`}
+        onChange={handleChange}
         {...props}
       />
       {error && (

@@ -1,0 +1,197 @@
+// GHX Innovation Exchange Database Schema
+// Version: 5.0 (Production Ready) - Converted to Prisma
+// This schema maintains exact naming from the original SQL schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================================
+// MODEL: Users
+// =====================================================================
+model Users {
+  user_id              Int      @id @default(autoincrement())
+  email                String   @unique @db.VarChar(255)
+  password_hash        String   @db.VarChar(255)
+  first_name           String   @db.VarChar(100)
+  last_name            String   @db.VarChar(100)
+  country_code         String?  @db.VarChar(10)
+  phone_number         String?  @db.VarChar(20)
+  profile_picture_url  String?  @db.VarChar(255)
+  country              String?  @db.VarChar(100)
+  state_province       String?  @db.VarChar(100)
+  city                 String?  @db.VarChar(100)
+  address_details      Json?    @db.JsonB
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  last_login_at        DateTime? @db.Timestamptz(6)
+
+  // Relations
+  organization_applications       Organization_Applications[] @relation("RequestingUser")
+  reviewed_organization_applications Organization_Applications[] @relation("ReviewedByAdmin")
+  individual_role_applications    Individual_Role_Applications[] @relation("RequestingUserIndividual")
+  reviewed_individual_applications Individual_Role_Applications[] @relation("ReviewedByAdminIndividual")
+  user_ecosystem_roles            User_Ecosystem_Roles[]
+  user_organization_memberships   User_Organization_Memberships[]
+
+  @@index([country], map: "idx_users_country")
+  @@index([state_province], map: "idx_users_state_province")
+  @@index([city], map: "idx_users_city")
+  @@index([address_details], map: "idx_users_address_details", type: Gin)
+}
+
+// =====================================================================
+// MODEL: Organizations
+// =====================================================================
+model Organizations {
+  organization_id   Int       @id @default(autoincrement())
+  name              String    @db.VarChar(255)
+  organization_type String    @db.VarChar(50)
+  description       String?
+  website_url       String?   @db.VarChar(255)
+  logo_url          String?   @db.VarChar(255)
+  country           String?   @db.VarChar(100)
+  state_province    String?   @db.VarChar(100)
+  city              String?   @db.VarChar(100)
+  address_details   Json?     @db.JsonB
+  is_verified       Boolean   @default(true)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at        DateTime? @db.Timestamptz(6)
+
+  // Relations
+  startup_details               Startup_Details?
+  user_organization_memberships User_Organization_Memberships[]
+
+  @@index([country], map: "idx_organizations_country")
+  @@index([state_province], map: "idx_organizations_state_province")
+  @@index([city], map: "idx_organizations_city")
+  @@index([deleted_at], map: "idx_organizations_deleted_at")
+  @@index([address_details], map: "idx_organizations_address_details", type: Gin)
+}
+
+// =====================================================================
+// MODEL: Forms (JSON-based approach)
+// =====================================================================
+model Forms {
+  form_id     Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  version     Int      @default(1)
+  description String?
+  structure   Json     @db.JsonB
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  organization_applications    Organization_Applications[]
+  individual_role_applications Individual_Role_Applications[]
+
+  @@unique([name, version])
+}
+
+// =====================================================================
+// MODEL: Cohorts
+// =====================================================================
+model Cohorts {
+  cohort_id   Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar(255)
+  start_date  DateTime? @db.Date
+  end_date    DateTime? @db.Date
+
+  // Relations
+  startup_details Startup_Details[]
+}
+
+// =====================================================================
+// MODEL: Startup_Details
+// =====================================================================
+model Startup_Details {
+  organization_id Int    @id
+  cohort_id       Int?
+  alumni_status   String @default("ACTIVE_MEMBER") @db.VarChar(50)
+
+  // Relations
+  organization Organizations @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade, map: "fk_startup_organization")
+  cohort       Cohorts?      @relation(fields: [cohort_id], references: [cohort_id], onDelete: SetNull, map: "fk_startup_cohort")
+}
+
+// =====================================================================
+// MODEL: Organization_Applications
+// =====================================================================
+model Organization_Applications {
+  application_id       Int       @id @default(autoincrement())
+  requesting_user_id   Int
+  form_id              Int
+  form_responses       Json?     @db.JsonB
+  status               String    @default("PENDING") @db.VarChar(20)
+  reviewed_by_admin_id Int?
+  review_notes         String?
+  created_at           DateTime  @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  form             Forms  @relation(fields: [form_id], references: [form_id], onDelete: Restrict, map: "fk_app_form")
+  requesting_user  Users  @relation("RequestingUser", fields: [requesting_user_id], references: [user_id], onDelete: Cascade, map: "fk_requesting_user")
+  reviewed_by_admin Users? @relation("ReviewedByAdmin", fields: [reviewed_by_admin_id], references: [user_id], onDelete: SetNull, map: "fk_reviewed_by_admin")
+
+  @@index([requesting_user_id], map: "idx_org_app_req_user")
+  @@index([form_responses], map: "idx_org_app_responses", type: Gin)
+}
+
+// =====================================================================
+// MODEL: Individual_Role_Applications
+// =====================================================================
+model Individual_Role_Applications {
+  application_id       Int      @id @default(autoincrement())
+  requesting_user_id   Int
+  form_id              Int
+  form_responses       Json?    @db.JsonB
+  proposed_role        String   @db.VarChar(50)
+  status               String   @default("PENDING") @db.VarChar(20)
+  reviewed_by_admin_id Int?
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  form              Forms  @relation(fields: [form_id], references: [form_id], onDelete: Restrict, map: "fk_ind_app_form")
+  requesting_user   Users  @relation("RequestingUserIndividual", fields: [requesting_user_id], references: [user_id], onDelete: Cascade, map: "fk_requesting_user_individual")
+  reviewed_by_admin Users? @relation("ReviewedByAdminIndividual", fields: [reviewed_by_admin_id], references: [user_id], onDelete: SetNull, map: "fk_reviewed_by_admin_individual")
+
+  @@index([requesting_user_id], map: "idx_ind_app_req_user")
+  @@index([form_responses], map: "idx_ind_app_responses", type: Gin)
+}
+
+// =====================================================================
+// MODEL: User_Ecosystem_Roles
+// =====================================================================
+model User_Ecosystem_Roles {
+  role_assignment_id Int     @id @default(autoincrement())
+  user_id            Int
+  role               String  @db.VarChar(50)
+  is_active          Boolean @default(true)
+
+  // Relations
+  user Users @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "fk_user_role")
+
+  @@unique([user_id, role])
+}
+
+// =====================================================================
+// MODEL: User_Organization_Memberships
+// =====================================================================
+model User_Organization_Memberships {
+  membership_id   Int    @id @default(autoincrement())
+  user_id         Int
+  organization_id Int
+  role            String @db.VarChar(50)
+  status          String @default("ACTIVE") @db.VarChar(20)
+
+  // Relations
+  user         Users         @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "fk_user_membership")
+  organization Organizations @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade, map: "fk_organization_membership")
+
+  @@unique([user_id, organization_id])
+  @@index([user_id], map: "idx_membership_user")
+  @@index([organization_id], map: "idx_membership_org")
+}

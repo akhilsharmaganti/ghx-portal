@@ -1,0 +1,143 @@
+erDiagram
+     %% -- Core Entities --
+
+     Users {
+         int user_id PK "Unique identifier for each user"
+         string email UK "Unique login email"
+         string password_hash "Hashed password for security"
+         string first_name
+         string last_name
+         string profile_picture_url
+         datetime created_at
+         datetime last_login_at
+     }
+
+     Organizations {
+         int organization_id PK "Unique identifier for each organization"
+         string name "Official name of the organization"
+         string organization_type "ENUM: STARTUP, HCP, INVESTOR_FIRM, etc."
+         string description
+         string website_url
+         string logo_url
+         bool is_verified "Set to true by GHX Admin"
+         datetime created_at
+     }
+
+     %% -- Linking and Application Tables --
+
+     User_Organization_Memberships {
+         int membership_id PK
+         int user_id FK "Links to the Users table"
+         int organization_id FK "Links to the Organizations table"
+         string role "ENUM: ADMIN, MEMBER, ADVISOR"
+         string status "ENUM: ACTIVE, INACTIVE"
+     }
+
+     Organization_Applications {
+         int application_id PK "Unique ID for the application"
+         int requesting_user_id FK "The user who submitted the application"
+         string proposed_name "Proposed name from the form"
+         string proposed_type "Proposed type from the form"
+         string application_data "JSON blob for all other form fields"
+            string status "ENUM: PENDING, APPROVED, REJECTED"
+            int reviewed_by_admin_id FK "The GHX admin who reviewed it"
+            text review_notes "Internal notes or rejection reason"
+            datetime created_at
+        }
+   
+        %% -- Relationships --
+   
+     Users ||--o{ Organization_Applications : "submits"
+     Users ||--o{ User_Organization_Memberships : "is member of"
+     Organizations ||--o{ User_Organization_Memberships : "has member"
+
+     %% A note on the application-to-organization flow:
+     %% An 'APPROVED' application in Organization_Applications triggers the creation
+     %% of a record in the Organizations table. This is a business logic flow
+     %% rather than a direct foreign key relationship from Organizations back to Applications.
+
+
+
+
+
+
+erDiagram
+     %% -- Core Entities --
+
+     Users {
+         int user_id PK "Unique identifier for each user"
+         string email UK "Unique login email"
+         string password_hash "Hashed password for security"
+         string first_name
+         string last_name
+            string profile_picture_url
+            datetime created_at
+            datetime last_login_at
+        }
+   
+        Organizations {
+            int organization_id PK "Unique identifier for each organization"
+            string name "Official name of the organization"
+            string organization_type "ENUM: STARTUP, HCP, INVESTOR_FIRM, etc."
+            string description
+            string website_url
+            string logo_url
+            bool is_verified "Set to true by GHX Admin"
+            datetime created_at
+        }
+   
+        %% -- Linking and Application Tables --
+   
+        User_Organization_Memberships {
+            int membership_id PK
+            int user_id FK "Links to the Users table"
+            int organization_id FK "Links to the Organizations table"
+            string role "ENUM: ADMIN, MEMBER, ADVISOR"
+            string status "ENUM: ACTIVE, INACTIVE"
+        }
+   
+        Organization_Applications {
+            int application_id PK "Unique ID for the application"
+            int requesting_user_id FK "The user who submitted the application"
+            string proposed_name "Proposed name from the form"
+            string proposed_type "Proposed type from the form"
+            string application_data "JSON blob for all other form fields"
+            string status "ENUM: PENDING, APPROVED, REJECTED"
+            int reviewed_by_admin_id FK "The GHX admin who reviewed it"
+            text review_notes "Internal notes or rejection reason"
+            datetime created_at
+        }
+   
+        %% -- NEW: Tables for Individual Stakeholder Approval --
+   
+        Individual_Role_Applications {
+            int application_id PK "Unique ID for individual role application"
+            int requesting_user_id FK "The user applying for a role"
+            string proposed_role "ENUM: MENTOR, INDIVIDUAL_INVESTOR, etc."
+            text justification "User's explanation of their expertise"
+            string status "ENUM: PENDING, APPROVED, REJECTED"
+            int reviewed_by_admin_id FK "The GHX admin who reviewed it"
+            datetime created_at
+        }
+   
+        User_Ecosystem_Roles {
+            int role_assignment_id PK "Unique ID for the assigned role"
+            int user_id FK "The user who holds the role"
+            string role "The approved role (e.g., MENTOR)"
+            bool is_active "Admin can toggle this role on/off"
+        }
+   
+   
+        %% -- Relationships --
+   
+        Users ||--o{ Organization_Applications : "submits"
+        Users ||--o{ User_Organization_Memberships : "is member of"
+        Organizations ||--o{ User_Organization_Memberships : "has member"
+   
+        %% -- NEW: Relationships for Individual Roles --
+        Users ||--o{ Individual_Role_Applications : "applies for role"
+        Users ||--o{ User_Ecosystem_Roles : "holds ecosystem role"
+   
+        %% Business Logic Note: An 'APPROVED' status in either application table
+        %% triggers the creation of a corresponding record in the Organizations
+        %% or User_Ecosystem_Roles table. This is a workflow, not a direct FK link.

@@ -1,0 +1,557 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================================
+// ENUMS FOR TYPE SAFETY
+// =====================================================================
+
+enum UserType {
+  STARTUP
+  ADMIN
+  MENTOR
+  INVESTOR
+  SEEKER
+}
+
+enum OrganizationType {
+  STARTUP
+  CORPORATE
+  NGO
+  RESEARCH_INSTITUTE
+}
+
+enum ProgramType {
+  ACCELERATOR
+  INCUBATOR
+  CHALLENGE
+  WORKSHOP
+  COMPETITION
+}
+
+enum ProgramStatus {
+  DRAFT
+  PUBLISHED
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum ProgramVisibility {
+  PUBLIC
+  PRIVATE
+  INVITE_ONLY
+}
+
+enum ApplicationStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+enum MeetingType {
+  MENTORING_SESSION
+  PROGRAM_MEETING
+  ADMIN_MEETING
+  NETWORKING
+}
+
+enum LocationType {
+  VIRTUAL
+  IN_PERSON
+  HYBRID
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ParticipantRole {
+  ORGANIZER
+  SPEAKER
+  ATTENDEE
+  OBSERVER
+}
+
+enum ResponseStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  TENTATIVE
+}
+
+enum NotificationType {
+  PROGRAM_UPDATE
+  MENTOR_REQUEST
+  MEETING_REMINDER
+  SYSTEM_ALERT
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum RelationshipType {
+  FORMAL_MENTORING
+  INFORMAL_ADVICE
+  PROGRAM_MENTORING
+}
+
+enum RelationshipStatus {
+  ACTIVE
+  INACTIVE
+  COMPLETED
+  TERMINATED
+}
+
+// =====================================================================
+// MODELS (Tables)
+// =====================================================================
+
+model User {
+  id                    Int       @id @default(autoincrement()) @map("user_id")
+  email                 String    @unique @db.VarChar(255)
+  passwordHash          String    @map("password_hash") @db.VarChar(255)
+  firstName             String    @map("first_name") @db.VarChar(100)
+  lastName              String    @map("last_name") @db.VarChar(100)
+  countryCode           String?   @map("country_code") @db.VarChar(10)
+  phoneNumber           String?   @map("phone_number") @db.VarChar(20)
+  profilePictureUrl     String?   @map("profile_picture_url") @db.VarChar(255)
+  country               String?   @db.VarChar(100)
+  stateProvince         String?   @map("state_province") @db.VarChar(100)
+  city                  String?   @db.VarChar(100)
+  addressDetails        Json?     @map("address_details")
+  userType              UserType  @default(STARTUP) @map("user_type")
+  isActive              Boolean   @default(true) @map("is_active")
+  isVerified            Boolean   @default(false) @map("is_verified")
+  verificationToken     String?   @map("verification_token") @db.VarChar(255)
+  verificationExpiresAt DateTime? @map("verification_expires_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  lastLoginAt           DateTime? @map("last_login_at")
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt             DateTime? @map("deleted_at")
+
+  // Relations
+  organizationMemberships UserOrganizationMembership[]
+  formResponses           FormResponse[]
+  formsCreated           Form[]                       @relation("FormCreator")
+  programsCreated         Program[]                    @relation("ProgramCreator")
+  programsApproved        Program[]                    @relation("ProgramApprover")
+  programApplications     ProgramApplication[]         @relation("ApplicationUser")
+  programApplicationsReviewed ProgramApplication[]     @relation("ApplicationReviewer")
+  mentorProfile          Mentor?
+  mentorApproved         Mentor[]                     @relation("MentorApprover")
+  meetingsOrganized      Meeting[]                    @relation("MeetingOrganizer")
+  meetingParticipants    MeetingParticipant[]
+  userProfile            UserProfile?
+  notifications          Notification[]
+  auditLogs              AuditLog[]
+  mentorRelationships    MentorUserRelationship[]     @relation("MenteeUser")
+
+  @@map("Users")
+}
+
+model Organization {
+  id                    Int       @id @default(autoincrement()) @map("organization_id")
+  name                  String    @db.VarChar(255)
+  description           String?
+  organizationType      OrganizationType @map("organization_type")
+  industry              String?   @db.VarChar(100)
+  foundedYear           Int?      @map("founded_year")
+  employeeCount         String?   @map("employee_count") @db.VarChar(50)
+  websiteUrl            String?   @map("website_url") @db.VarChar(255)
+  logoUrl               String?   @map("logo_url") @db.VarChar(255)
+  country               String?   @db.VarChar(100)
+  stateProvince         String?   @map("state_province") @db.VarChar(100)
+  city                  String?   @db.VarChar(100)
+  addressDetails        Json?     @map("address_details")
+  socialMedia           Json?     @map("social_media")
+  isVerified            Boolean   @default(false) @map("is_verified")
+  verificationDocuments Json?     @map("verification_documents")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt             DateTime? @map("deleted_at")
+
+  // Relations
+  memberships           UserOrganizationMembership[]
+  formResponses         FormResponse[]
+  programApplications   ProgramApplication[]
+  mentorRelationships   MentorUserRelationship[]
+  meetingParticipants   MeetingParticipant[]
+
+  @@map("Organizations")
+}
+
+model UserOrganizationMembership {
+  id              Int            @id @default(autoincrement()) @map("membership_id")
+  userId          Int            @map("user_id")
+  organizationId  Int            @map("organization_id")
+  role            MembershipRole
+  isPrimary       Boolean        @default(false) @map("is_primary")
+  joinedAt        DateTime       @default(now()) @map("joined_at")
+  leftAt          DateTime?      @map("left_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId, leftAt])
+  @@map("User_Organization_Memberships")
+}
+
+model Form {
+  id              Int       @id @default(autoincrement()) @map("form_id")
+  name            String    @db.VarChar(255)
+  description     String?
+  formType        String    @map("form_type") @db.VarChar(100)
+  structure       Json      @map("structure")
+  isActive        Boolean   @default(true) @map("is_active")
+  version         Int       @default(1)
+  createdByAdminId Int?     @map("created_by_admin_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  // Relations
+  createdByAdmin  User?     @relation("FormCreator", fields: [createdByAdminId], references: [id], onDelete: SetNull)
+  responses       FormResponse[]
+
+  @@map("Forms")
+}
+
+model FormResponse {
+  id              Int           @id @default(autoincrement()) @map("response_id")
+  formId          Int           @map("form_id")
+  userId          Int           @map("user_id")
+  organizationId  Int?          @map("organization_id")
+  responseData    Json          @map("response_data")
+  submittedAt     DateTime      @default(now()) @map("submitted_at")
+  updatedAt       DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  form            Form          @relation(fields: [formId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@map("Form_Responses")
+}
+
+model Program {
+  id                    Int               @id @default(autoincrement()) @map("program_id")
+  name                  String            @db.VarChar(255)
+  description           String
+  shortDescription      String?           @map("short_description") @db.VarChar(500)
+  programType           ProgramType       @map("program_type")
+  category              String?           @db.VarChar(100)
+  subcategory           String?           @db.VarChar(100)
+  status                ProgramStatus     @default(DRAFT)
+  visibility            ProgramVisibility @default(PUBLIC)
+  startDate             DateTime?         @map("start_date")
+  endDate               DateTime?         @map("end_date")
+  applicationDeadline   DateTime?         @map("application_deadline")
+  maxParticipants       Int?              @map("max_participants")
+  currentParticipants   Int               @default(0) @map("current_participants")
+  requirements          Json?             @map("requirements")
+  benefits              Json?             @map("benefits")
+  eligibilityCriteria   Json?             @map("eligibility_criteria")
+  programStructure      Json?             @map("program_structure")
+  mentorsRequired       Boolean           @default(false) @map("mentors_required")
+  fundingAvailable      Boolean           @default(false) @map("funding_available")
+  fundingDetails        Json?             @map("funding_details")
+  logoUrl               String?           @map("logo_url") @db.VarChar(255)
+  bannerUrl             String?           @map("banner_url") @db.VarChar(255)
+  tags                  String[]          @map("tags")
+  createdByAdminId      Int               @map("created_by_admin_id")
+  approvedByAdminId     Int?              @map("approved_by_admin_id")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
+  publishedAt           DateTime?         @map("published_at")
+  deletedAt             DateTime?         @map("deleted_at")
+
+  // Relations
+  createdByAdmin        User                    @relation("ProgramCreator", fields: [createdByAdminId], references: [id], onDelete: Restrict)
+  approvedByAdmin       User?                   @relation("ProgramApprover", fields: [approvedByAdminId], references: [id], onDelete: SetNull)
+  applications          ProgramApplication[]
+  meetings              Meeting[]
+  mentorRelationships   MentorUserRelationship[]
+
+  @@map("Programs")
+}
+
+model ProgramApplication {
+  id                    Int               @id @default(autoincrement()) @map("application_id")
+  programId             Int               @map("program_id")
+  organizationId        Int               @map("organization_id")
+  applyingUserId        Int               @map("applying_user_id")
+  status                ApplicationStatus @default(PENDING)
+  applicationData       Json?             @map("application_data")
+  motivationStatement   String?           @map("motivation_statement")
+  expectedOutcomes      String?           @map("expected_outcomes")
+  teamSize              Int?              @map("team_size")
+  teamDetails           Json?             @map("team_details")
+  previousExperience    Json?             @map("previous_experience")
+  financialNeeds        Json?             @map("financial_needs")
+  mentorPreferences     Json?             @map("mentor_preferences")
+  reviewScore           Decimal?          @map("review_score") @db.Decimal(3, 2)
+  reviewNotes           String?           @map("review_notes")
+  reviewedByAdminId     Int?              @map("reviewed_by_admin_id")
+  reviewedAt            DateTime?         @map("reviewed_at")
+  decisionReason        String?           @map("decision_reason")
+  enrollmentDate        DateTime?         @map("enrollment_date")
+  completionDate        DateTime?         @map("completion_date")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  program               Program           @relation(fields: [programId], references: [id], onDelete: Cascade)
+  organization          Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applyingUser          User              @relation("ApplicationUser", fields: [applyingUserId], references: [id], onDelete: Cascade)
+  reviewedByAdmin       User?             @relation("ApplicationReviewer", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
+
+  @@unique([programId, organizationId])
+  @@map("Program_Applications")
+}
+
+model MentorCategory {
+  id                Int              @id @default(autoincrement()) @map("category_id")
+  name              String           @unique @db.VarChar(100)
+  description       String?
+  parentCategoryId  Int?             @map("parent_category_id")
+  icon              String?          @db.VarChar(100)
+  color             String?          @map("color") @db.VarChar(7)
+  isActive          Boolean          @default(true) @map("is_active")
+  sortOrder         Int              @default(0) @map("sort_order")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  parentCategory    MentorCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id], onDelete: SetNull)
+  subcategories     MentorCategory[] @relation("CategoryHierarchy")
+  mentors           Mentor[]
+  subcategoryMentors Mentor[]        @relation("SubcategoryMentors")
+
+  @@map("Mentor_Categories")
+}
+
+model Mentor {
+  id                    Int           @id @default(autoincrement()) @map("mentor_id")
+  userId                Int           @unique @map("user_id")
+  categoryId            Int           @map("category_id")
+  subcategoryId         Int?          @map("subcategory_id")
+  expertise             Json          @map("expertise")
+  experienceYears       Int?          @map("experience_years")
+  currentPosition       String?       @map("current_position") @db.VarChar(255)
+  currentCompany        String?       @map("current_company") @db.VarChar(255)
+  previousCompanies     Json?         @map("previous_companies")
+  education             Json?         @map("education")
+  certifications        Json?         @map("certifications")
+  achievements          Json?         @map("achievements")
+  mentoringStyle        String?       @map("mentoring_style")
+  mentoringApproach     String?       @map("mentoring_approach")
+  availability          Json?         @map("availability")
+  maxMentees            Int           @default(5) @map("max_mentees")
+  currentMentees        Int           @default(0) @map("current_mentees")
+  hourlyRate            Decimal?      @map("hourly_rate") @db.Decimal(10, 2)
+  currency              String        @default("USD") @db.VarChar(3)
+  rating                Decimal       @default(0.00) @map("rating") @db.Decimal(3, 2)
+  totalReviews          Int           @default(0) @map("total_reviews")
+  isApproved            Boolean       @default(false) @map("is_approved")
+  approvalNotes         String?       @map("approval_notes")
+  approvedByAdminId     Int?          @map("approved_by_admin_id")
+  approvedAt            DateTime?     @map("approved_at")
+  isActive              Boolean       @default(true) @map("is_active")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @default(now()) @updatedAt @map("updated_at")
+  deletedAt             DateTime?     @map("deleted_at")
+
+  // Relations
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category              MentorCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  subcategory           MentorCategory? @relation("SubcategoryMentors", fields: [subcategoryId], references: [id], onDelete: SetNull)
+  approvedByAdmin       User?         @relation("MentorApprover", fields: [approvedByAdminId], references: [id], onDelete: SetNull)
+  meetings              Meeting[]
+  mentorRelationships   MentorUserRelationship[] @relation("MentorUser")
+
+  @@map("Mentors")
+}
+
+model MentorUserRelationship {
+  id                Int                @id @default(autoincrement()) @map("relationship_id")
+  mentorId          Int                @map("mentor_id")
+  userId            Int                @map("user_id")
+  organizationId    Int?               @map("organization_id")
+  relationshipType  RelationshipType   @map("relationship_type")
+  programId         Int?               @map("program_id")
+  status            RelationshipStatus @default(ACTIVE)
+  startDate         DateTime           @map("start_date")
+  endDate           DateTime?          @map("end_date")
+  goals             String?
+  expectations       String?
+  notes             String?
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  mentor            Mentor            @relation("MentorUser", fields: [mentorId], references: [id], onDelete: Cascade)
+  user              User              @relation("MenteeUser", fields: [userId], references: [id], onDelete: Cascade)
+  organization      Organization?     @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  program           Program?          @relation(fields: [programId], references: [id], onDelete: SetNull)
+
+  @@unique([mentorId, userId, status])
+  @@map("Mentor_User_Relationships")
+}
+
+model Meeting {
+  id                    Int           @id @default(autoincrement()) @map("meeting_id")
+  title                 String        @db.VarChar(255)
+  description           String?
+  meetingType           MeetingType   @map("meeting_type")
+  organizerId           Int           @map("organizer_id")
+  programId             Int?          @map("program_id")
+  mentorId              Int?          @map("mentor_id")
+  startTime             DateTime      @map("start_time")
+  endTime               DateTime      @map("end_time")
+  timezone              String        @default("UTC") @db.VarChar(50)
+  locationType          LocationType  @default(VIRTUAL) @map("location_type")
+  locationDetails       Json?         @map("location_details")
+  maxParticipants       Int?          @map("max_participants")
+  currentParticipants   Int           @default(0) @map("current_participants")
+  status                MeetingStatus @default(SCHEDULED)
+  meetingLink           String?       @map("meeting_link") @db.VarChar(500)
+  recordingUrl          String?       @map("recording_url") @db.VarChar(500)
+  notes                 String?
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  organizer            User              @relation("MeetingOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  program              Program?          @relation(fields: [programId], references: [id], onDelete: SetNull)
+  mentor               Mentor?           @relation(fields: [mentorId], references: [id], onDelete: SetNull)
+  participants         MeetingParticipant[]
+
+  @@map("Meetings")
+}
+
+model MeetingParticipant {
+  id                Int             @id @default(autoincrement()) @map("participant_id")
+  meetingId         Int             @map("meeting_id")
+  userId            Int             @map("user_id")
+  organizationId    Int?            @map("organization_id")
+  role              ParticipantRole @default(ATTENDEE)
+  responseStatus    ResponseStatus  @default(PENDING) @map("response_status")
+  responseNotes     String?         @map("response_notes")
+  joinedAt          DateTime?       @map("joined_at")
+  leftAt            DateTime?       @map("left_at")
+  feedbackRating    Int?            @map("feedback_rating")
+  feedbackComments  String?         @map("feedback_comments")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  meeting           Meeting         @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization      Organization?   @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@unique([meetingId, userId])
+  @@map("Meeting_Participants")
+}
+
+model UserProfile {
+  id                          Int       @id @default(autoincrement()) @map("profile_id")
+  userId                      Int       @unique @map("user_id")
+  bio                         String?
+  headline                    String?   @db.VarChar(255)
+  professionalSummary         String?   @map("professional_summary")
+  skills                      String[]  @map("skills")
+  expertiseAreas              String[]  @map("expertise_areas")
+  languages                   Json?     @map("languages")
+  educationHistory            Json?     @map("education_history")
+  workExperience             Json?     @map("work_experience")
+  achievements                Json?     @map("achievements")
+  socialLinks                 Json?     @map("social_links")
+  portfolioLinks              Json?     @map("portfolio_links")
+  preferences                 Json?     @map("preferences")
+  profileCompletionPercentage Int       @default(0) @map("profile_completion_percentage")
+  isPublic                    Boolean   @default(true) @map("is_public")
+  lastProfileUpdate           DateTime  @default(now()) @map("last_profile_update")
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  user                        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("User_Profiles")
+}
+
+model Notification {
+  id                Int                @id @default(autoincrement()) @map("notification_id")
+  userId            Int                @map("user_id")
+  title             String             @db.VarChar(255)
+  message           String
+  type              NotificationType   @map("type")
+  priority          NotificationPriority @default(NORMAL)
+  isRead            Boolean            @default(false) @map("is_read")
+  readAt            DateTime?          @map("read_at")
+  actionUrl         String?            @map("action_url") @db.VarChar(500)
+  actionData        Json?              @map("action_data")
+  expiresAt         DateTime?          @map("expires_at")
+  createdAt         DateTime           @default(now()) @map("created_at")
+
+  // Relations
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Notifications")
+}
+
+model AuditLog {
+  id                Int       @id @default(autoincrement()) @map("log_id")
+  userId            Int?      @map("user_id")
+  action            String    @db.VarChar(100)
+  entityType        String    @map("entity_type") @db.VarChar(50)
+  entityId          Int?      @map("entity_id")
+  oldValues         Json?     @map("old_values")
+  newValues         Json?     @map("new_values")
+  ipAddress         String?   @map("ip_address")
+  userAgent         String?   @map("user_agent")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("Audit_Logs")
+}
+
+model SchemaVersion {
+  id                Int       @id @default(autoincrement()) @map("version_id")
+  versionNumber     String    @map("version_number") @db.VarChar(20)
+  description       String?
+  appliedAt         DateTime  @default(now()) @map("applied_at")
+  appliedBy         String    @default("SYSTEM") @map("applied_by") @db.VarChar(100)
+
+  @@map("Schema_Versions")
+}

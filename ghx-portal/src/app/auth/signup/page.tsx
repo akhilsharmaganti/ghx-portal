@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { signUp } from '@/lib/firebase'
 import { SignUpData } from '@/lib/firebase'
 import { CheckCircle, User, Building, Globe, MapPin } from 'lucide-react'
@@ -13,7 +14,7 @@ import { FormField, PasswordField, FileUpload, ErrorDisplay } from '@/components
 
 // Types and Config
 import { RegistrationFormData, initialFormData } from '@/types/registration'
-import { companyStages, heardFromOptions, userTypes } from '@/config/form-options'
+import { companyStages, fundingRanges, heardFromOptions, userTypes } from '@/config/form-options'
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -147,9 +148,11 @@ export default function SignUpPage() {
         {/* Header */}
         <motion.div variants={itemVariants} className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <img 
+            <Image 
               src="/logo/GLOBAL HEALTHX.png" 
               alt="Global HealthX Logo" 
+              width={64}
+              height={64}
               className="h-16 w-auto"
             />
           </div>
@@ -296,6 +299,21 @@ export default function SignUpPage() {
                 options={companyStages}
                 icon={Building}
               />
+
+              {/* Conditional Funding Field */}
+              {formData.companyStage && formData.companyStage !== 'BOOTSTRAPPED' && (
+                <FormField
+                  label="Total funds raised by your company?"
+                  name="totalFundsRaised"
+                  type="select"
+                  value={formData.totalFundsRaised}
+                  onChange={handleInputChange}
+                  placeholder="Select funding range"
+                  required
+                  options={fundingRanges}
+                  icon={Building}
+                />
+              )}
             </motion.div>
 
             {/* Additional Information Section */}
@@ -326,6 +344,20 @@ export default function SignUpPage() {
                 options={heardFromOptions}
                 icon={Building}
               />
+
+              {/* Conditional "Other" Text Input */}
+              {formData.heardFrom === 'OTHER' && (
+                <FormField
+                  label="Type your answer"
+                  name="heardFromOther"
+                  type="text"
+                  value={formData.heardFromOther}
+                  onChange={handleInputChange}
+                  placeholder="Please specify how you heard about us"
+                  required
+                  icon={Building}
+                />
+              )}
             </motion.div>
 
             {/* Error Message */}

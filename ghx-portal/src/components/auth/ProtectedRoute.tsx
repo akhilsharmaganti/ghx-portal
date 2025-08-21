@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useRequireAuth } from '@/contexts/AuthContext'
 import { motion } from 'framer-motion'
@@ -61,12 +61,18 @@ export function ProtectedRoute({
   // Authentication Check
   // =====================================================================
 
-  if (requireAuth && needsAuth) {
-    // User is not authenticated, redirect to sign in
-    if (typeof window !== 'undefined') {
+  // =====================================================================
+  // Handle Authentication Redirect
+  // =====================================================================
+
+  useEffect(() => {
+    if (requireAuth && needsAuth && typeof window !== 'undefined') {
       router.push('/auth/signin')
     }
-    
+  }, [requireAuth, needsAuth, router])
+
+  if (requireAuth && needsAuth) {
+    // User is not authenticated, show sign in UI
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
         <motion.div

@@ -78,7 +78,7 @@ export interface Program {
 export type ProgramType = 'accelerator' | 'incubator' | 'challenge' | 'workshop' | 'mentorship';
 export type ProgramStatus = 'draft' | 'active' | 'paused' | 'completed' | 'cancelled';
 
-// Calendar Types
+// Calendar Types (Legacy - keeping for compatibility)
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -94,6 +94,9 @@ export interface CalendarEvent {
 }
 
 export type EventType = 'meeting' | 'workshop' | 'deadline' | 'milestone' | 'demo';
+
+// Export new calendar types
+export * from './calendar';
 
 // Mentor Types
 export interface Mentor {

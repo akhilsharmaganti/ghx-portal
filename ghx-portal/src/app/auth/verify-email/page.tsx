@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Mail, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 
-export default function VerifyEmailPage() {
+// Separate component that uses useSearchParams
+function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') || 'your email'
   const [resending, setResending] = useState(false)
@@ -163,5 +164,21 @@ export default function VerifyEmailPage() {
         </motion.div>
       </motion.div>
     </div>
+  )
+}
+
+// Main component with Suspense boundary
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }

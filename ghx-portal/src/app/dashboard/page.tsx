@@ -3,9 +3,14 @@
 import React, { useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DashboardTab } from '@/components/dashboard/DashboardTab';
+import { MentorsTab } from '@/components/dashboard/mentors';
+import { ProgramsTab } from '@/components/dashboard/programs';
+import { Calendar } from '@/components/dashboard/calendar';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { User } from '@/types';
+import { mentorData } from '@/data/mentors';
+import { programCardData } from '@/data/programs';
 
 // Mock user data for development
 const mockUser: User = {
@@ -40,23 +45,9 @@ export default function DashboardPage() {
       case 'dashboard':
         return <DashboardTab />;
       case 'programs':
-        return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Programs</h1>
-              <p className="text-gray-600">Programs tab content will be implemented here.</p>
-            </div>
-          </div>
-        );
-      case 'calendar':
-        return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Calendar</h1>
-              <p className="text-gray-600">Calendar tab content will be implemented here.</p>
-            </div>
-          </div>
-        );
+        return <ProgramsTab programs={programCardData} />;
+                      case 'calendar':
+                  return <Calendar />;
       case 'profile':
         return (
           <div className="space-y-6">
@@ -67,14 +58,7 @@ export default function DashboardPage() {
           </div>
         );
       case 'mentors':
-        return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Mentors</h1>
-              <p className="text-gray-600">Mentors tab content will be implemented here.</p>
-            </div>
-          </div>
-        );
+        return <MentorsTab mentors={mentorData} />;
       default:
         return <DashboardTab />;
     }

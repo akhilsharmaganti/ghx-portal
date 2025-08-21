@@ -1,4 +1,4 @@
-import { CompanyStage, HeardFrom, UserType } from '@/config/form-options'
+import { CompanyStage, FundingRange, HeardFrom, UserType } from '@/config/form-options'
 
 export interface RegistrationFormData {
   // Basic Auth Info
@@ -16,10 +16,12 @@ export interface RegistrationFormData {
   companyWebsite: string
   companyCountry: string
   companyStage: CompanyStage | ''
+  totalFundsRaised: FundingRange | ''
   
   // Additional Info
   pitchDeck: File | null
   heardFrom: HeardFrom | ''
+  heardFromOther: string
   
   // User Type
   userType: UserType
@@ -36,8 +38,10 @@ export interface RegistrationFormErrors {
   companyWebsite?: string
   companyCountry?: string
   companyStage?: string
+  totalFundsRaised?: string
   pitchDeck?: string
   heardFrom?: string
+  heardFromOther?: string
   userType?: string
 }
 
@@ -52,7 +56,9 @@ export const initialFormData: RegistrationFormData = {
   companyWebsite: '',
   companyCountry: '',
   companyStage: '',
+  totalFundsRaised: '',
   pitchDeck: null,
   heardFrom: '',
+  heardFromOther: '',
   userType: 'STARTUP'
 }

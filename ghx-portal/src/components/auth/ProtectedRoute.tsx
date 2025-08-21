@@ -32,6 +32,16 @@ export function ProtectedRoute({
   const { user, loading, requireAuth: needsAuth } = useRequireAuth()
 
   // =====================================================================
+  // Handle Authentication Redirect
+  // =====================================================================
+
+  useEffect(() => {
+    if (requireAuth && needsAuth && typeof window !== 'undefined') {
+      router.push('/auth/signin')
+    }
+  }, [requireAuth, needsAuth, router])
+
+  // =====================================================================
   // Loading State
   // =====================================================================
 
@@ -60,16 +70,6 @@ export function ProtectedRoute({
   // =====================================================================
   // Authentication Check
   // =====================================================================
-
-  // =====================================================================
-  // Handle Authentication Redirect
-  // =====================================================================
-
-  useEffect(() => {
-    if (requireAuth && needsAuth && typeof window !== 'undefined') {
-      router.push('/auth/signin')
-    }
-  }, [requireAuth, needsAuth, router])
 
   if (requireAuth && needsAuth) {
     // User is not authenticated, show sign in UI

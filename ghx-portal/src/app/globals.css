@@ -5,14 +5,25 @@
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   body {
     @apply text-gray-900 bg-gray-50;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
   
   * {
     @apply border-gray-200;
+    box-sizing: border-box;
   }
 }
 
@@ -122,7 +133,7 @@
 @layer utilities {
   /* Custom spacing */
   .ml-70 {
-    margin-left: 17.5rem; /* 280px */
+    margin-left: 18rem; /* 288px - slightly more than sidebar width */
   }
   
   /* Text truncation */

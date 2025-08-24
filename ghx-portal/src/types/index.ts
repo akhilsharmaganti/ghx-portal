@@ -240,3 +240,6 @@ export interface FilterConfig {
   value: any;
   operator: 'equals' | 'contains' | 'greaterThan' | 'lessThan' | 'in';
 }
+
+// Export profile types
+export * from './profile';

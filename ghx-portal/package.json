@@ -7,12 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "db:seed": "tsx scripts/setup-database.ts",
     "type-check": "tsc --noEmit",
     "setup:db": "tsx scripts/setup-database.ts",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:seed": "tsx scripts/setup-database.ts"
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.19",

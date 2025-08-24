@@ -6,11 +6,13 @@ import { DashboardTab } from '@/components/dashboard/DashboardTab';
 import { MentorsTab } from '@/components/dashboard/mentors';
 import { ProgramsTab } from '@/components/dashboard/programs';
 import { Calendar } from '@/components/dashboard/calendar';
+import { ProfileTab } from '@/components/dashboard/profile';
+import { ProfileCompletionGuard } from '@/components/dashboard/ProfileCompletionGuard';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { User } from '@/types';
 import { mentorData } from '@/data/mentors';
-import { programCardData } from '@/data/programs';
+import { enhancedProgramCardData } from '@/data/programs';
 
 // Mock user data for development
 const mockUser: User = {
@@ -45,20 +47,25 @@ export default function DashboardPage() {
       case 'dashboard':
         return <DashboardTab />;
       case 'programs':
-        return <ProgramsTab programs={programCardData} />;
-                      case 'calendar':
-                  return <Calendar />;
-      case 'profile':
         return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile</h1>
-              <p className="text-gray-600">Profile tab content will be implemented here.</p>
-            </div>
-          </div>
+          <ProfileCompletionGuard>
+            <ProgramsTab programs={enhancedProgramCardData} />
+          </ProfileCompletionGuard>
         );
+      case 'calendar':
+        return (
+          <ProfileCompletionGuard>
+            <Calendar />
+          </ProfileCompletionGuard>
+        );
+      case 'profile':
+        return <ProfileTab />;
       case 'mentors':
-        return <MentorsTab mentors={mentorData} />;
+        return (
+          <ProfileCompletionGuard>
+            <MentorsTab mentors={mentorData} />
+          </ProfileCompletionGuard>
+        );
       default:
         return <DashboardTab />;
     }

@@ -1,14 +1,24 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Calendar, Users, Tag, ArrowRight } from 'lucide-react';
+import { Calendar, Users, Clock, MapPin, Star, Play, Image as ImageIcon } from 'lucide-react';
 import { ProgramCardProps } from '@/types/programs';
-import { useRouter } from 'next/navigation';
+import { cn } from '@/utils';
 
-// Single Responsibility: Program card display and navigation
-export const ProgramCard: React.FC<ProgramCardProps> = ({
+interface EnhancedProgramCardProps extends ProgramCardProps {
+  variant?: 'ongoing' | 'open-application' | 'upcoming';
+  theme?: string;
+  whyJoinUs?: string;
+  hasTestimonials?: boolean;
+  hasTimeline?: boolean;
+  selectedStartupsCount?: number;
+  onViewDetails?: (programId: string) => void;
+  onApply?: (programId: string) => void;
+  onConnect?: (programId: string) => void;
+}
+
+export const ProgramCard: React.FC<EnhancedProgramCardProps> = ({
   id,
   title,
   shortDescription,
@@ -20,177 +30,219 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
   tags,
   currentParticipants,
   maxParticipants,
-  className = ''
+  className,
+  variant = 'upcoming',
+  theme,
+  whyJoinUs,
+  hasTestimonials = false,
+  hasTimeline = false,
+  selectedStartupsCount = 0,
+  onViewDetails,
+  onApply,
+  onConnect
 }) => {
-  const router = useRouter();
-
-  // Single Responsibility: Handle program card click
-  const handleCardClick = () => {
-    router.push(`/dashboard/programs/${id}`);
-  };
-
-  // Single Responsibility: Format date display
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
-  // Single Responsibility: Get status color and text
-  const getStatusInfo = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return { color: 'bg-green-100 text-green-800', text: 'Active' };
-      case 'UPCOMING':
-        return { color: 'bg-blue-100 text-blue-800', text: 'Upcoming' };
-      case 'COMPLETED':
-        return { color: 'bg-gray-100 text-gray-800', text: 'Completed' };
-      case 'PAUSED':
-        return { color: 'bg-yellow-100 text-yellow-800', text: 'Paused' };
-      case 'CANCELLED':
-        return { color: 'bg-red-100 text-red-800', text: 'Cancelled' };
+  const getVariantStyles = () => {
+    switch (variant) {
+      case 'ongoing':
+        return {
+          card: 'border-green-200 bg-gradient-to-br from-green-50 to-emerald-50',
+          badge: 'bg-green-100 text-green-800',
+          button: 'bg-green-600 hover:bg-green-700 text-white'
+        };
+      case 'open-application':
+        return {
+          card: 'border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50',
+          badge: 'bg-blue-100 text-blue-800',
+          button: 'bg-blue-600 hover:bg-blue-700 text-white'
+        };
+      case 'upcoming':
+        return {
+          card: 'border-purple-200 bg-gradient-to-br from-purple-50 to-violet-50',
+          badge: 'bg-purple-100 text-purple-800',
+          button: 'bg-purple-600 hover:bg-purple-700 text-white'
+        };
       default:
-        return { color: 'bg-gray-100 text-gray-800', text: status };
+        return {
+          card: 'border-gray-200 bg-white',
+          badge: 'bg-gray-100 text-gray-800',
+          button: 'bg-gray-600 hover:bg-gray-700 text-white'
+        };
     }
   };
 
-  // Single Responsibility: Get category color
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      'ACCELERATOR': 'bg-purple-100 text-purple-800',
-      'WORKSHOP': 'bg-blue-100 text-blue-800',
-      'EDUCATION': 'bg-green-100 text-green-800',
-      'COMPETITION': 'bg-orange-100 text-orange-800',
-      'MENTORSHIP': 'bg-indigo-100 text-indigo-800',
-      'FUNDING': 'bg-emerald-100 text-emerald-800',
-      'NETWORKING': 'bg-pink-100 text-pink-800'
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  const getVariantBadge = () => {
+    switch (variant) {
+      case 'ongoing':
+        return 'Ongoing';
+      case 'open-application':
+        return 'Apply Now';
+      case 'upcoming':
+        return 'Coming Soon';
+      default:
+        return status;
+    }
   };
 
-  const statusInfo = getStatusInfo(status);
-  const categoryColor = getCategoryColor(category);
+  const getVariantIcon = () => {
+    switch (variant) {
+      case 'ongoing':
+        return <Play className="w-4 h-4" />;
+      case 'open-application':
+        return <Calendar className="w-4 h-4" />;
+      case 'upcoming':
+        return <Clock className="w-4 h-4" />;
+      default:
+        return <Calendar className="w-4 h-4" />;
+    }
+  };
+
+  const styles = getVariantStyles();
 
   return (
     <motion.div
-      whileHover={{ y: -4, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2 }}
-      className={`
-        bg-white rounded-xl shadow-lg border border-gray-100 
-        cursor-pointer overflow-hidden group
-        hover:shadow-xl transition-all duration-300
-        ${className}
-      `}
-      onClick={handleCardClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleCardClick();
-        }
-      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        'group relative overflow-hidden rounded-xl border shadow-sm transition-all duration-300 hover:shadow-lg',
+        styles.card,
+        className
+      )}
     >
-      {/* Program Image Section */}
-      <div className="relative h-48 bg-gradient-to-br from-primary-50 to-primary-100">
-        <Image
-          src={image}
-          alt={`${title} program image`}
-          width={400}
-          height={300}
-          className="w-full h-full object-cover"
-          priority
-        />
-        
-        {/* Status Badge */}
-        <div className="absolute top-3 left-3">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}>
-            {statusInfo.text}
-          </span>
-        </div>
-
-        {/* Category Badge */}
-        <div className="absolute top-3 right-3">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${categoryColor}`}>
-            {category}
-          </span>
-        </div>
-
-        {/* Click Indicator */}
-        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="bg-primary-600 text-white p-2 rounded-full shadow-lg">
-            <ArrowRight className="w-4 h-4" />
+      {/* Media Section */}
+      <div className="relative h-48 overflow-hidden">
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gray-100">
+            <ImageIcon className="h-12 w-12 text-gray-400" />
           </div>
+        )}
+        
+        {/* Badge */}
+        <div className={cn(
+          'absolute top-3 left-3 flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium',
+          styles.badge
+        )}>
+          {getVariantIcon()}
+          <span>{getVariantBadge()}</span>
         </div>
+
+        {/* Theme Badge */}
+        {theme && (
+          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
+            {theme}
+          </div>
+        )}
       </div>
 
       {/* Content Section */}
-      <div className="p-6">
-        {/* Title */}
-        <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors duration-300 mb-3">
-          {title}
-        </h3>
+      <div className="p-4 space-y-3">
+        {/* Title and Category */}
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors duration-300 mb-1">
+            {title}
+          </h3>
+          <p className="text-sm text-gray-600 capitalize">{category}</p>
+        </div>
 
         {/* Description */}
-        <p className="text-gray-600 mb-4 line-clamp-2">
-          {shortDescription}
-        </p>
+        <p className="text-sm text-gray-700 line-clamp-2">{shortDescription}</p>
 
-        {/* Program Details */}
-        <div className="space-y-3 mb-4">
-          {/* Duration */}
-          <div className="flex items-center text-sm text-gray-600">
-            <Calendar className="w-4 h-4 mr-2" />
-            <span>{duration}</span>
+        {/* Why Join Us (for open application and upcoming) */}
+        {variant !== 'ongoing' && whyJoinUs && (
+          <div className="bg-white/50 rounded-lg p-2">
+            <p className="text-xs text-gray-600 font-medium mb-1">Why Join Us:</p>
+            <p className="text-xs text-gray-700 line-clamp-2">{whyJoinUs}</p>
           </div>
+        )}
 
-          {/* Start Date */}
-          <div className="flex items-center text-sm text-gray-600">
-            <Calendar className="w-4 h-4 mr-2" />
-            <span>Starts {formatDate(startDate)}</span>
+        {/* Selected Startups (for ongoing programs) */}
+        {variant === 'ongoing' && selectedStartupsCount > 0 && (
+          <div className="bg-white/50 rounded-lg p-2">
+            <p className="text-xs text-gray-600 font-medium mb-1">Selected Startups:</p>
+            <p className="text-xs text-gray-700">{selectedStartupsCount} startups participating</p>
           </div>
+        )}
 
-          {/* Participants */}
-          <div className="flex items-center text-sm text-gray-600">
-            <Users className="w-4 h-4 mr-2" />
-            <span>{currentParticipants}/{maxParticipants} participants</span>
+        {/* Features */}
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1">
+              <Clock className="w-3 h-3" />
+              <span>{duration}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Users className="w-3 h-3" />
+              <span>{currentParticipants}/{maxParticipants}</span>
+            </div>
+          </div>
+          
+          {/* Additional Features */}
+          <div className="flex items-center space-x-2">
+            {hasTimeline && <Calendar className="w-3 h-3 text-blue-500" />}
+            {hasTestimonials && <Star className="w-3 h-3 text-yellow-500" />}
           </div>
         </div>
 
         {/* Tags */}
         {tags.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center mb-2">
-              <Tag className="w-4 h-4 text-gray-500 mr-2" />
-              <span className="text-sm text-gray-500">Tags</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {tags.slice(0, 3).map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md"
-                >
-                  {tag}
-                </span>
-              ))}
-              {tags.length > 3 && (
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
-                  +{tags.length - 3} more
-                </span>
-              )}
-            </div>
+          <div className="flex flex-wrap gap-1">
+            {tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-white/70 text-xs text-gray-600 rounded-full border"
+              >
+                {tag}
+              </span>
+            ))}
+            {tags.length > 3 && (
+              <span className="px-2 py-1 bg-white/70 text-xs text-gray-600 rounded-full border">
+                +{tags.length - 3}
+              </span>
+            )}
           </div>
         )}
 
-        {/* Click Indicator */}
-        <div className="text-center pt-3 border-t border-gray-100">
-          <p className="text-xs text-gray-500 group-hover:text-primary-600 transition-colors duration-300">
-            Click to view program details
-          </p>
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-2 pt-2">
+          {/* View Details Button (All variants) */}
+          <button
+            onClick={() => onViewDetails?.(id)}
+            className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            View Details
+          </button>
+
+          {/* Variant-specific Actions */}
+          {variant === 'open-application' && (
+            <button
+              onClick={() => onApply?.(id)}
+              className={cn(
+                'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                styles.button
+              )}
+            >
+              Apply Now
+            </button>
+          )}
+
+          {variant === 'upcoming' && (
+            <button
+              onClick={() => onConnect?.(id)}
+              className={cn(
+                'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                styles.button
+              )}
+            >
+              Connect
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

@@ -4,15 +4,17 @@ import { LucideIcon } from 'lucide-react'
 interface FormFieldProps {
   label: string
   name: string
-  type: 'text' | 'email' | 'password' | 'url' | 'select'
+  type: 'text' | 'email' | 'password' | 'url' | 'select' | 'textarea'
   value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  onChange: (e: any) => void // More flexible to support both old and new handlers
   placeholder?: string
   required?: boolean
   icon?: LucideIcon
   options?: ReadonlyArray<{ readonly value: string; readonly label: string }>
   minLength?: number
   className?: string
+  error?: string
+  rows?: number
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -26,7 +28,9 @@ export const FormField: React.FC<FormFieldProps> = ({
   icon: Icon,
   options,
   minLength,
-  className = ''
+  className = '',
+  error,
+  rows = 3
 }) => {
   const baseInputClasses = "w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
   const selectClasses = "appearance-none bg-white"
@@ -61,6 +65,17 @@ export const FormField: React.FC<FormFieldProps> = ({
               </option>
             ))}
           </select>
+        ) : type === 'textarea' ? (
+          <textarea
+            id={name}
+            name={name}
+            value={value}
+            onChange={onChange}
+            required={required}
+            rows={rows}
+            className={inputClasses}
+            placeholder={placeholder}
+          />
         ) : (
           <input
             type={type}
@@ -75,6 +90,13 @@ export const FormField: React.FC<FormFieldProps> = ({
           />
         )}
       </div>
+      
+      {/* Error Display */}
+      {error && (
+        <p className="mt-1 text-sm text-red-600">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

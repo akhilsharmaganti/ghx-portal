@@ -8,6 +8,7 @@ export const programData: Program[] = [
     shortDescription: '12-week intensive program for early-stage healthtech startups',
     fullDescription: 'Our flagship HealthTech Startup Accelerator is designed to help early-stage healthtech companies scale rapidly. This comprehensive program combines mentorship, funding opportunities, and strategic guidance to accelerate your startup\'s growth.',
     category: 'ACCELERATOR',
+    programCategory: 'UPCOMING',
     duration: '12 weeks',
 
     requirements: [
@@ -40,6 +41,7 @@ export const programData: Program[] = [
     shortDescription: '8-week workshop on healthcare marketing strategies',
     fullDescription: 'Learn the fundamentals of digital marketing specifically tailored for healthcare businesses. This workshop covers SEO, social media, content marketing, and compliance considerations for healthcare marketing.',
     category: 'WORKSHOP',
+    programCategory: 'UPCOMING',
     duration: '8 weeks',
 
     requirements: [
@@ -71,6 +73,7 @@ export const programData: Program[] = [
     shortDescription: 'Intensive training on healthcare regulations and compliance',
     fullDescription: 'Master the complex world of healthcare regulations with our comprehensive masterclass. Learn about FDA guidelines, international standards, and best practices for maintaining compliance.',
     category: 'EDUCATION',
+    programCategory: 'ONGOING',
     duration: '6 weeks',
 
     requirements: [
@@ -102,6 +105,7 @@ export const programData: Program[] = [
     shortDescription: 'Learn to create compelling pitch decks for healthcare investors',
     fullDescription: 'Transform your startup pitch into an investor-winning presentation. This workshop teaches you how to structure your story, present data effectively, and handle investor questions.',
     category: 'WORKSHOP',
+    programCategory: 'UPCOMING',
     duration: '4 weeks',
 
     requirements: [
@@ -133,6 +137,7 @@ export const programData: Program[] = [
     shortDescription: 'Competition for innovative healthcare solutions',
     fullDescription: 'Join our annual Healthcare Innovation Challenge and compete with other innovators to solve real healthcare problems. Winners receive funding, mentorship, and implementation support.',
     category: 'COMPETITION',
+    programCategory: 'UPCOMING',
     duration: '16 weeks',
 
     requirements: [
@@ -165,6 +170,7 @@ export const programData: Program[] = [
     shortDescription: 'Personalized mentorship program for healthcare entrepreneurs',
     fullDescription: 'Get matched with experienced healthcare mentors who can guide you through your entrepreneurial journey. This program provides personalized guidance and ongoing support.',
     category: 'MENTORSHIP',
+    programCategory: 'ONGOING',
     duration: 'Ongoing',
 
     requirements: [
@@ -206,6 +212,111 @@ export const programCardData: ProgramCardProps[] = programData.map(program => ({
   currentParticipants: program.currentParticipants,
   maxParticipants: program.maxParticipants
 }));
+
+// Enhanced program card data with new features
+export interface EnhancedProgramCardData extends ProgramCardProps {
+  variant: 'ongoing' | 'open-application' | 'upcoming';
+  theme?: string;
+  whyJoinUs?: string;
+  hasTestimonials?: boolean;
+  hasTimeline?: boolean;
+  selectedStartupsCount?: number;
+}
+
+export const enhancedProgramCardData: EnhancedProgramCardData[] = [
+  {
+    id: '1',
+    title: 'HealthTech Startup Accelerator',
+    shortDescription: '12-week intensive program for early-stage healthtech startups',
+    category: 'ACCELERATOR',
+    duration: '12 weeks',
+    startDate: '2025-08-25',
+    status: 'UPCOMING',
+    image: '/api/placeholder/400/300?text=HealthTech+Accelerator',
+    tags: ['Startup', 'HealthTech', 'Funding', 'Mentorship'],
+    currentParticipants: 18,
+    maxParticipants: 20,
+    variant: 'upcoming',
+    theme: 'Healthcare Innovation',
+    whyJoinUs: 'Join a community of healthcare innovators and get direct access to investors, mentors, and resources to scale your startup.',
+    hasTestimonials: true,
+    hasTimeline: true
+  },
+  {
+    id: '2',
+    title: 'Digital Marketing for Healthcare',
+    shortDescription: '8-week workshop on healthcare marketing strategies',
+    category: 'WORKSHOP',
+    duration: '8 weeks',
+    startDate: '2025-09-01',
+    status: 'UPCOMING',
+    image: '/api/placeholder/400/300?text=Digital+Marketing',
+    tags: ['Marketing', 'Healthcare', 'Digital', 'Workshop'],
+    currentParticipants: 25,
+    maxParticipants: 30,
+    variant: 'upcoming',
+    theme: 'Digital Marketing',
+    whyJoinUs: 'Learn healthcare-specific marketing strategies from industry experts and gain practical skills for your business.',
+    hasTestimonials: false,
+    hasTimeline: true
+  },
+  {
+    id: '3',
+    title: 'Regulatory Affairs Masterclass',
+    shortDescription: 'Intensive training on healthcare regulations and compliance',
+    category: 'EDUCATION',
+    duration: '6 weeks',
+    startDate: '2025-08-18',
+    status: 'ACTIVE',
+    image: '/api/placeholder/400/300?text=Regulatory+Affairs',
+    tags: ['Regulatory', 'Compliance', 'Healthcare', 'Training'],
+    currentParticipants: 22,
+    maxParticipants: 25,
+    variant: 'ongoing',
+    theme: 'Regulatory Compliance',
+    whyJoinUs: 'Master healthcare regulations and compliance with expert-led sessions and practical case studies.',
+    hasTestimonials: true,
+    hasTimeline: true,
+    selectedStartupsCount: 5
+  },
+  {
+    id: '4',
+    title: 'Healthcare Innovation Challenge',
+    shortDescription: 'Competition for innovative healthcare solutions',
+    category: 'COMPETITION',
+    duration: '10 weeks',
+    startDate: '2025-10-01',
+    status: 'UPCOMING',
+    image: '/api/placeholder/400/300?text=Innovation+Challenge',
+    tags: ['Innovation', 'Competition', 'Healthcare', 'Solutions'],
+    currentParticipants: 0,
+    maxParticipants: 50,
+    variant: 'open-application',
+    theme: 'Innovation',
+    whyJoinUs: 'Compete with the best healthcare innovators and win funding, mentorship, and industry recognition.',
+    hasTestimonials: true,
+    hasTimeline: true
+  },
+  {
+    id: '5',
+    title: 'Mentor-Mentee Matching Program',
+    shortDescription: 'Personalized mentorship program for healthcare entrepreneurs',
+    category: 'MENTORSHIP',
+    duration: 'Ongoing',
+    startDate: '2025-08-01',
+    status: 'ACTIVE',
+    image: '/api/placeholder/400/300?text=Mentorship',
+    tags: ['Mentorship', 'Healthcare', 'Entrepreneurship', 'Networking'],
+    currentParticipants: 45,
+    maxParticipants: 100,
+    variant: 'ongoing',
+    theme: 'Mentorship',
+    whyJoinUs: 'Get personalized guidance from experienced healthcare mentors to accelerate your entrepreneurial journey.',
+    hasTestimonials: true,
+    hasTimeline: false,
+    selectedStartupsCount: 8
+  }
+];
 
 // Utility functions
 export const getProgramById = (id: string): Program | undefined => {

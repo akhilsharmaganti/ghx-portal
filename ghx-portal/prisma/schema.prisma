@@ -37,6 +37,12 @@ enum ProgramType {
   COMPETITION
 }
 
+enum ProgramCategory {
+  ONGOING
+  OPEN_APPLICATION
+  UPCOMING
+}
+
 enum ProgramStatus {
   DRAFT
   PUBLISHED
@@ -170,6 +176,7 @@ model User {
   notifications          Notification[]
   auditLogs              AuditLog[]
   mentorRelationships    MentorUserRelationship[]     @relation("MenteeUser")
+  profileCompletions     ProfileCompletion[]
 
   @@map("Users")
 }
@@ -239,24 +246,23 @@ model Form {
 
   // Relations
   createdByAdmin  User?     @relation("FormCreator", fields: [createdByAdminId], references: [id], onDelete: SetNull)
-  responses       FormResponse[]
 
   @@map("Forms")
 }
 
 model FormResponse {
   id              Int           @id @default(autoincrement()) @map("response_id")
-  formId          Int           @map("form_id")
+  templateId      Int           @map("template_id")
   userId          Int           @map("user_id")
   organizationId  Int?          @map("organization_id")
-  responseData    Json          @map("response_data")
   submittedAt     DateTime      @default(now()) @map("submitted_at")
   updatedAt       DateTime      @default(now()) @updatedAt @map("updated_at")
 
   // Relations
-  form            Form          @relation(fields: [formId], references: [id], onDelete: Cascade)
+  template        FormTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  fieldResponses  FormFieldResponse[]
 
   @@map("Form_Responses")
 }
@@ -269,6 +275,7 @@ model Program {
   programType           ProgramType       @map("program_type")
   category              String?           @db.VarChar(100)
   subcategory           String?           @db.VarChar(100)
+  programCategory       ProgramCategory   @map("program_category") @default(UPCOMING)
   status                ProgramStatus     @default(DRAFT)
   visibility            ProgramVisibility @default(PUBLIC)
   startDate             DateTime?         @map("start_date")
@@ -286,6 +293,13 @@ model Program {
   logoUrl               String?           @map("logo_url") @db.VarChar(255)
   bannerUrl             String?           @map("banner_url") @db.VarChar(255)
   tags                  String[]          @map("tags")
+  theme                  String?           @map("theme") @db.VarChar(100)
+  whyJoinUs             String?           @map("why_join_us") @db.Text
+  adminContactInfo      Json?             @map("admin_contact_info")
+  selectedStartups      Json?             @map("selected_startups")
+  importantTimelines    Json?             @map("important_timelines")
+  mediaAssets           Json?             @map("media_assets")
+  testimonials          Json?             @map("testimonials")
   createdByAdminId      Int               @map("created_by_admin_id")
   approvedByAdminId     Int?              @map("approved_by_admin_id")
   createdAt             DateTime          @default(now()) @map("created_at")
@@ -299,8 +313,67 @@ model Program {
   applications          ProgramApplication[]
   meetings              Meeting[]
   mentorRelationships   MentorUserRelationship[]
+  media                 ProgramMedia[]
+  timelines             ProgramTimeline[]
+  testimonials          ProgramTestimonial[]
 
   @@map("Programs")
+}
+
+model ProgramMedia {
+  id          Int      @id @default(autoincrement()) @map("media_id")
+  programId   Int      @map("program_id")
+  type        String   @map("media_type") @db.VarChar(50) // 'image', 'video'
+  url         String   @map("media_url") @db.VarChar(500)
+  altText     String?  @map("alt_text") @db.VarChar(255)
+  caption     String?  @map("caption") @db.VarChar(500)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  program     Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@map("Program_Media")
+}
+
+model ProgramTimeline {
+  id          Int      @id @default(autoincrement()) @map("timeline_id")
+  programId   Int      @map("program_id")
+  title       String   @map("title") @db.VarChar(255)
+  description String?  @map("description") @db.Text
+  eventDate   DateTime @map("event_date")
+  eventType   String   @map("event_type") @db.VarChar(100) // 'demo_day', 'milestone', 'check_in'
+  isImportant Boolean  @default(false) @map("is_important")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  program     Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@map("Program_Timelines")
+}
+
+model ProgramTestimonial {
+  id          Int      @id @default(autoincrement()) @map("testimonial_id")
+  programId   Int      @map("program_id")
+  userName    String   @map("user_name") @db.VarChar(255)
+  userRole    String?  @map("user_role") @db.VarChar(100)
+  userCompany String?  @map("user_company") @db.VarChar(255)
+  content     String   @map("content") @db.Text
+  rating      Int?     @map("rating") // 1-5 stars
+  cohortYear  String?  @map("cohort_year") @db.VarChar(10)
+  isApproved  Boolean  @default(false) @map("is_approved")
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  program     Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@map("Program_Testimonials")
 }
 
 model ProgramApplication {
@@ -554,4 +627,109 @@ model SchemaVersion {
   appliedBy         String    @default("SYSTEM") @map("applied_by") @db.VarChar(100)
 
   @@map("Schema_Versions")
+}
+
+// =====================================================================
+// NEW: NORMALIZED FORM MANAGEMENT MODELS (BCNF Compliant)
+// =====================================================================
+
+// Form Template Definition - Stores form structure in normalized format
+model FormTemplate {
+  id                Int       @id @default(autoincrement()) @map("template_id")
+  name              String    @unique @db.VarChar(255)
+  description       String?
+  version           Int       @default(1)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  // Relations
+  sections          FormSection[]
+  responses         FormResponse[]
+  profileCompletions ProfileCompletion[]
+
+  @@unique([name, version])
+  @@map("Form_Templates")
+}
+
+// Form Sections - Normalized section structure
+model FormSection {
+  id                Int       @id @default(autoincrement()) @map("section_id")
+  templateId        Int       @map("template_id")
+  name              String    @db.VarChar(255)
+  description       String?
+  orderIndex        Int       @map("order_index")
+  isRequired        Boolean   @default(false) @map("is_required")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  template          FormTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  fields            FormField[]
+
+  @@unique([templateId, orderIndex])
+  @@map("Form_Sections")
+}
+
+// Form Fields - Normalized field definitions
+model FormField {
+  id                Int       @id @default(autoincrement()) @map("field_id")
+  sectionId         Int       @map("section_id")
+  name              String    @db.VarChar(255)
+  label             String    @db.VarChar(255)
+  fieldType         String    @map("field_type") @db.VarChar(50) // text, textarea, select, checkbox, etc.
+  placeholder       String?
+  helpText          String?
+  isRequired        Boolean   @default(false) @map("is_required")
+  validationRules   Json?     @map("validation_rules")
+  options           Json?     @map("options") // For select, radio, checkbox fields
+  orderIndex        Int       @map("order_index")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  section           FormSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  responses         FormFieldResponse[]
+
+  @@unique([sectionId, orderIndex])
+  @@map("Form_Fields")
+}
+
+// Form Field Responses - Normalized response storage (BCNF compliant)
+model FormFieldResponse {
+  id                Int       @id @default(autoincrement()) @map("field_response_id")
+  formResponseId    Int       @map("form_response_id")
+  fieldId           Int       @map("field_id")
+  value             String    // Store actual response value
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  formResponse      FormResponse @relation(fields: [formResponseId], references: [id], onDelete: Cascade)
+  field             FormField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([formResponseId, fieldId])
+  @@map("Form_Field_Responses")
+}
+
+// Profile Completion Tracking - Normalized completion status
+model ProfileCompletion {
+  id                Int       @id @default(autoincrement()) @map("completion_id")
+  userId            Int       @map("user_id")
+  templateId        Int       @map("template_id")
+  completionStatus  String    @map("completion_status") @db.VarChar(50) // NOT_STARTED, IN_PROGRESS, COMPLETED
+  progressPercentage Int      @default(0) @map("progress_percentage")
+  startedAt         DateTime? @map("started_at")
+  completedAt       DateTime? @map("completed_at")
+  lastUpdatedAt     DateTime  @default(now()) @map("last_updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template          FormTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId])
+  @@map("Profile_Completions")
 }

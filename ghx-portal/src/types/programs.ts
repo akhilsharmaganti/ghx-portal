@@ -6,6 +6,7 @@ export interface Program {
   shortDescription: string;
   fullDescription: string;
   category: ProgramCategory;
+  programCategory: 'ONGOING' | 'OPEN_APPLICATION' | 'UPCOMING';
   duration: string;
   requirements: string[];
   benefits: string[];
@@ -17,6 +18,13 @@ export interface Program {
   image: string;
   mentorIds: string[];
   tags: string[];
+  theme?: string;
+  whyJoinUs?: string;
+  adminContactInfo?: AdminContactInfo;
+  selectedStartups?: SelectedStartup[];
+  importantTimelines?: ProgramTimeline[];
+  mediaAssets?: ProgramMedia[];
+  testimonials?: ProgramTestimonial[];
   createdAt: string;
   updatedAt: string;
 }
@@ -63,5 +71,55 @@ export interface ProgramSearchParams {
   search?: string;
   category?: ProgramCategory;
   status?: ProgramStatus;
+  programCategory?: 'ONGOING' | 'OPEN_APPLICATION' | 'UPCOMING';
   duration?: string;
+}
+
+// New interfaces for enhanced program features
+export interface AdminContactInfo {
+  email?: string;
+  phone?: string;
+  contactPerson?: string;
+  responseTime?: string;
+}
+
+export interface SelectedStartup {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  industry: string;
+  stage: string;
+}
+
+export interface ProgramTimeline {
+  id: string;
+  title: string;
+  description?: string;
+  eventDate: string;
+  eventType: 'demo_day' | 'milestone' | 'check_in' | 'other';
+  isImportant: boolean;
+  sortOrder: number;
+}
+
+export interface ProgramMedia {
+  id: string;
+  type: 'image' | 'video';
+  url: string;
+  altText?: string;
+  caption?: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export interface ProgramTestimonial {
+  id: string;
+  userName: string;
+  userRole?: string;
+  userCompany?: string;
+  content: string;
+  rating?: number;
+  cohortYear?: string;
+  isApproved: boolean;
+  isFeatured: boolean;
 }

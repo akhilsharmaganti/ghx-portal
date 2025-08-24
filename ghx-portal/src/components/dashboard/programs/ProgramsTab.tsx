@@ -1,203 +1,340 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Search, Filter, Briefcase, Calendar } from 'lucide-react';
-import { ProgramsGrid } from './ProgramsGrid';
-import { ProgramCardProps, ProgramCategory, ProgramStatus } from '@/types/programs';
-import { getAllCategories, getAllStatuses } from '@/data/programs';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Filter, Grid3X3, List, Calendar, Users, TrendingUp } from 'lucide-react';
+import { ProgramCard } from './ProgramCard';
+import { ProgramFilters } from './ProgramFilters';
+import { ProgramCardProps, ProgramSearchParams } from '@/types/programs';
+import { cn } from '@/utils';
 
-export interface ProgramsTabProps {
-  programs: ProgramCardProps[];
-  className?: string;
+interface EnhancedProgramCardProps extends ProgramCardProps {
+  variant: 'ongoing' | 'open-application' | 'upcoming';
+  theme?: string;
+  whyJoinUs?: string;
+  hasTestimonials?: boolean;
+  hasTimeline?: boolean;
+  selectedStartupsCount?: number;
 }
 
-export const ProgramsTab: React.FC<ProgramsTabProps> = ({
-  programs,
-  className = ''
-}) => {
-  // State management
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ProgramCategory | ''>('');
-  const [selectedStatus, setSelectedStatus] = useState<ProgramStatus | ''>('');
-  const [selectedDuration, setSelectedDuration] = useState('');
+interface ProgramsTabProps {
+  programs: EnhancedProgramCardProps[];
+}
 
-  // Get filter options
-  const categories = getAllCategories();
-  const statuses = getAllStatuses();
-  const durations = ['1-4 weeks', '5-8 weeks', '9-12 weeks', '13+ weeks', 'Ongoing'];
+export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showFilters, setShowFilters] = useState(false);
+  const [searchParams, setSearchParams] = useState<ProgramSearchParams>({
+    search: '',
+    category: undefined,
+    status: undefined,
+    programCategory: undefined,
+    duration: ''
+  });
 
-  // Filter programs based on search and filters
+  // Enhanced filtering logic
   const filteredPrograms = useMemo(() => {
-    let filtered = programs;
+    return programs.filter(program => {
+      const matchesSearch = !searchParams.search || 
+        program.title.toLowerCase().includes(searchParams.search.toLowerCase()) ||
+        program.shortDescription.toLowerCase().includes(searchParams.search.toLowerCase()) ||
+        program.theme?.toLowerCase().includes(searchParams.search.toLowerCase());
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(program =>
-        program.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        program.shortDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        program.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      const matchesCategory = !searchParams.category || 
+        program.category === searchParams.category;
+
+      const matchesStatus = !searchParams.status || 
+        program.status === searchParams.status;
+
+      const matchesProgramCategory = !searchParams.programCategory || 
+        getVariantFromProgramCategory(program.variant) === searchParams.programCategory;
+
+      const matchesDuration = !searchParams.duration || 
+        program.duration === searchParams.duration;
+
+      return matchesSearch && matchesCategory && matchesStatus && 
+             matchesProgramCategory && matchesDuration;
+    });
+  }, [programs, searchParams]);
+
+  // Group programs by category
+  const groupedPrograms = useMemo(() => {
+    const grouped = {
+      ongoing: filteredPrograms.filter(p => p.variant === 'ongoing'),
+      openApplication: filteredPrograms.filter(p => p.variant === 'open-application'),
+      upcoming: filteredPrograms.filter(p => p.variant === 'upcoming')
+    };
+
+    return grouped;
+  }, [filteredPrograms]);
+
+  // Map variant strings to database enum values
+  const getVariantFromProgramCategory = (variant: string) => {
+    switch (variant) {
+      case 'ongoing':
+        return 'ONGOING';
+      case 'open-application':
+        return 'OPEN_APPLICATION';
+      case 'upcoming':
+        return 'UPCOMING';
+      default:
+        return undefined;
     }
-
-    // Category filter
-    if (selectedCategory) {
-      filtered = filtered.filter(program => program.category === selectedCategory);
-    }
-
-    // Status filter
-    if (selectedStatus) {
-      filtered = filtered.filter(program => program.status === selectedStatus);
-    }
-
-    // Duration filter
-    if (selectedDuration) {
-      filtered = filtered.filter(program => {
-        if (selectedDuration === 'Ongoing') {
-          return program.duration.toLowerCase().includes('ongoing');
-        }
-        const weeks = parseInt(program.duration);
-        if (isNaN(weeks)) return false;
-        
-        switch (selectedDuration) {
-          case '1-4 weeks': return weeks >= 1 && weeks <= 4;
-          case '5-8 weeks': return weeks >= 5 && weeks <= 8;
-          case '9-12 weeks': return weeks >= 9 && weeks <= 12;
-          case '13+ weeks': return weeks >= 13;
-          default: return true;
-        }
-      });
-    }
-
-    return filtered;
-  }, [programs, searchTerm, selectedCategory, selectedStatus, selectedDuration]);
-
-  // Clear all filters
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('');
-    setSelectedStatus('');
-    setSelectedDuration('');
   };
 
+  // Enhanced search params with program category
+  const enhancedSearchParams = {
+    ...searchParams,
+    programCategory: searchParams.programCategory
+  };
+
+  const handleSearchChange = (newParams: Partial<ProgramSearchParams>) => {
+    setSearchParams(prev => ({ ...prev, ...newParams }));
+  };
+
+  const handleViewDetails = (programId: string) => {
+    // Navigate to program details page
+    console.log('View details for program:', programId);
+  };
+
+  const handleApply = (programId: string) => {
+    // Handle program application
+    console.log('Apply for program:', programId);
+  };
+
+  const handleConnect = (programId: string) => {
+    // Handle admin connection request
+    console.log('Connect for program:', programId);
+  };
+
+  const getCategoryStats = () => {
+    return {
+      ongoing: groupedPrograms.ongoing.length,
+      openApplication: groupedPrograms.openApplication.length,
+      upcoming: groupedPrograms.upcoming.length,
+      total: filteredPrograms.length
+    };
+  };
+
+  const stats = getCategoryStats();
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={className}
-    >
+    <div className="space-y-6">
       {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-          Available Programs
-        </h2>
-        <p className="text-gray-600">
-          Discover and enroll in healthcare innovation programs tailored for entrepreneurs
-        </p>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Programs</h1>
+            <p className="text-gray-600">
+              Discover and join innovative programs tailored for healthcare startups
+            </p>
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={cn(
+                  'p-2 rounded-md transition-colors',
+                  viewMode === 'grid' ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={cn(
+                  'p-2 rounded-md transition-colors',
+                  viewMode === 'list' ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Filters Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                'flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors',
+                showFilters 
+                  ? 'bg-primary-50 border-primary-200 text-primary-700' 
+                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+              )}
+            >
+              <Filter className="w-4 h-4" />
+              <span>Filters</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Category Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-green-100 p-2 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-green-900">{stats.ongoing}</p>
+                <p className="text-sm text-green-700">Ongoing Programs</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-blue-100 p-2 rounded-lg">
+                <Calendar className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-900">{stats.openApplication}</p>
+                <p className="text-sm text-blue-700">Open Applications</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-purple-100 p-2 rounded-lg">
+                <Calendar className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-purple-900">{stats.upcoming}</p>
+                <p className="text-sm text-purple-700">Upcoming Programs</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gray-100 p-2 rounded-lg">
+                <Users className="w-5 h-5 text-gray-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-sm text-gray-700">Total Programs</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search programs by title, description, or tags..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      {/* Filters Section */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <ProgramFilters
+              searchParams={enhancedSearchParams}
+              onSearchChange={handleSearchChange}
             />
-          </div>
-        </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* Filter Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Category Filter */}
+      {/* Programs Grid */}
+      <div className="space-y-8">
+        {/* Ongoing Programs */}
+        {groupedPrograms.ongoing.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Briefcase className="inline w-4 h-4 mr-1" />
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value as ProgramCategory | '')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+              <div className="w-2 h-8 bg-green-500 rounded-full mr-3"></div>
+              Ongoing Programs
+            </h2>
+            <div className={cn(
+              'grid gap-6',
+              viewMode === 'grid' 
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                : 'grid-cols-1'
+            )}>
+              {groupedPrograms.ongoing.map((program) => (
+                <ProgramCard
+                  key={program.id}
+                  {...program}
+                  variant="ongoing"
+                  onViewDetails={handleViewDetails}
+                  onApply={handleApply}
+                  onConnect={handleConnect}
+                />
               ))}
-            </select>
+            </div>
           </div>
+        )}
 
-          {/* Status Filter */}
+        {/* Open Application Programs */}
+        {groupedPrograms.openApplication.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Filter className="inline w-4 h-4 mr-1" />
-              Status
-            </label>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value as ProgramStatus | '')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              <option value="">All Statuses</option>
-              {statuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+              <div className="w-2 h-8 bg-blue-500 rounded-full mr-3"></div>
+              Open Applications
+            </h2>
+            <div className={cn(
+              'grid gap-6',
+              viewMode === 'grid' 
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                : 'grid-cols-1'
+            )}>
+              {groupedPrograms.openApplication.map((program) => (
+                <ProgramCard
+                  key={program.id}
+                  {...program}
+                  variant="open-application"
+                  onViewDetails={handleViewDetails}
+                  onApply={handleApply}
+                  onConnect={handleConnect}
+                />
               ))}
-            </select>
+            </div>
           </div>
+        )}
 
-          {/* Duration Filter */}
+        {/* Upcoming Programs */}
+        {groupedPrograms.upcoming.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Calendar className="inline w-4 h-4 mr-1" />
-              Duration
-            </label>
-            <select
-              value={selectedDuration}
-              onChange={(e) => setSelectedDuration(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              <option value="">All Durations</option>
-              {durations.map((duration) => (
-                <option key={duration} value={duration}>
-                  {duration}
-                </option>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+              <div className="w-2 h-8 bg-purple-500 rounded-full mr-3"></div>
+              Upcoming Programs
+            </h2>
+            <div className={cn(
+              'grid gap-6',
+              viewMode === 'grid' 
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                : 'grid-cols-1'
+            )}>
+              {groupedPrograms.upcoming.map((program) => (
+                <ProgramCard
+                  key={program.id}
+                  {...program}
+                  variant="upcoming"
+                  onViewDetails={handleViewDetails}
+                  onApply={handleApply}
+                  onConnect={handleConnect}
+                />
               ))}
-            </select>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Clear Filters */}
-        {(selectedCategory || selectedStatus || selectedDuration) && (
-          <div className="mt-4 text-center">
-            <button
-              onClick={clearFilters}
-              className="text-primary-600 hover:text-primary-700 text-sm font-medium underline"
-            >
-              Clear all filters
-            </button>
+        {/* No Programs Found */}
+        {filteredPrograms.length === 0 && (
+          <div className="text-center py-12">
+            <div className="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No programs found</h3>
+            <p className="text-gray-500">
+              Try adjusting your search criteria or filters
+            </p>
           </div>
         )}
       </div>
-
-      {/* Results Counter */}
-      <div className="mb-6">
-        <p className="text-gray-600">
-          Showing {filteredPrograms.length} of {programs.length} programs
-        </p>
-      </div>
-
-      {/* Programs Grid */}
-      <ProgramsGrid programs={filteredPrograms} />
-    </motion.div>
+    </div>
   );
 };

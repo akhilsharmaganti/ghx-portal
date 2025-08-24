@@ -143,6 +143,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           return (
             <button
               key={tab.id}
+              data-tab={tab.id}
               onClick={() => handleTabClick(tab.id)}
               className={cn(
                 'w-full flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200',

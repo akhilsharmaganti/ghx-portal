@@ -63,6 +63,12 @@ export function ProfileCompletionGuard({
   }
 
   // =====================================================================
+  // TEMPORARY: Bypass profile completion for development
+  // =====================================================================
+  // TODO: Remove this bypass when profile completion is ready
+  return <>{children}</>
+
+  // =====================================================================
   // Access Blocked - Profile Incomplete
   // =====================================================================
   const missingPercentage = requiredCompletion - overallCompletion

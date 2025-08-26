@@ -63,6 +63,7 @@ export const ProgramsGrid: React.FC<ProgramsGridProps> = ({
         <ProgramCard
           key={program.id}
           {...program}
+          variant="upcoming"
         />
       ))}
     </div>

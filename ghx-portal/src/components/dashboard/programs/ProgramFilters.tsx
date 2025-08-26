@@ -17,9 +17,9 @@ export const ProgramFilters: React.FC<ProgramFiltersProps> = ({
   const handleClearFilters = () => {
     onSearchChange({
       search: '',
-      category: '',
-      status: '',
-      programCategory: '',
+      category: undefined,
+      status: undefined,
+      programCategory: undefined,
       duration: ''
     });
   };
@@ -108,7 +108,7 @@ export const ProgramFilters: React.FC<ProgramFiltersProps> = ({
           </label>
           <select
             value={searchParams.status || ''}
-            onChange={(e) => onSearchChange({ status: e.target.value as ProgramStatus | '' })}
+            onChange={(e) => onSearchChange({ status: e.target.value as ProgramStatus || undefined })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="">All Statuses</option>

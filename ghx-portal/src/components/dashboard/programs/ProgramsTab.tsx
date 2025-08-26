@@ -5,25 +5,57 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, Grid3X3, List, Calendar, Users, TrendingUp } from 'lucide-react';
 import { ProgramCard } from './ProgramCard';
 import { ProgramFilters } from './ProgramFilters';
-import { ProgramCardProps, ProgramSearchParams } from '@/types/programs';
+import { ProgramDetailsModal } from './ProgramDetailsModal';
+import { ProgramCardProps, ProgramSearchParams, EnhancedProgramCardProps, Program } from '@/types/programs';
 import { cn } from '@/utils';
 
-interface EnhancedProgramCardProps extends ProgramCardProps {
-  variant: 'ongoing' | 'open-application' | 'upcoming';
-  theme?: string;
-  whyJoinUs?: string;
-  hasTestimonials?: boolean;
-  hasTimeline?: boolean;
-  selectedStartupsCount?: number;
-}
-
 interface ProgramsTabProps {
-  programs: EnhancedProgramCardProps[];
+  programs: Program[];
+  isLoading?: boolean;
 }
 
-export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
+export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs, isLoading = false }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState<EnhancedProgramCardProps | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Map Program to EnhancedProgramCardProps
+  const mapProgramToEnhanced = (program: Program): EnhancedProgramCardProps => {
+    // Determine variant based on program status and dates
+    let variant: 'ongoing' | 'open-application' | 'upcoming' = 'upcoming';
+    
+    if (program.status === 'ACTIVE') {
+      variant = 'ongoing';
+    } else if (program.status === 'PUBLISHED') {
+      variant = 'open-application';
+    } else {
+      variant = 'upcoming';
+    }
+
+    return {
+      id: program.id,
+      title: program.title,
+      shortDescription: program.shortDescription,
+      category: program.category,
+      duration: program.duration,
+      startDate: program.startDate,
+      status: program.status,
+      image: program.image,
+      tags: program.tags || [],
+      currentParticipants: program.currentParticipants || 0,
+      maxParticipants: program.maxParticipants || 50,
+      variant,
+      theme: program.theme || '',
+      whyJoinUs: program.whyJoinUs || '',
+      hasTestimonials: false, // Default value
+      hasTimeline: false, // Default value
+      selectedStartupsCount: program.selectedStartups?.length || 0
+    };
+  };
+
+  // Convert programs to enhanced format
+  const enhancedPrograms = useMemo(() => programs.map(mapProgramToEnhanced), [programs]);
   const [searchParams, setSearchParams] = useState<ProgramSearchParams>({
     search: '',
     category: undefined,
@@ -32,9 +64,23 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
     duration: ''
   });
 
+  // Map variant strings to database enum values
+  const getVariantFromProgramCategory = (variant: string) => {
+    switch (variant) {
+      case 'ongoing':
+        return 'ONGOING';
+      case 'open-application':
+        return 'OPEN_APPLICATION';
+      case 'upcoming':
+        return 'UPCOMING';
+      default:
+        return undefined;
+    }
+  };
+
   // Enhanced filtering logic
   const filteredPrograms = useMemo(() => {
-    return programs.filter(program => {
+    return enhancedPrograms.filter(program => {
       const matchesSearch = !searchParams.search || 
         program.title.toLowerCase().includes(searchParams.search.toLowerCase()) ||
         program.shortDescription.toLowerCase().includes(searchParams.search.toLowerCase()) ||
@@ -55,7 +101,7 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
       return matchesSearch && matchesCategory && matchesStatus && 
              matchesProgramCategory && matchesDuration;
     });
-  }, [programs, searchParams]);
+  }, [enhancedPrograms, searchParams]);
 
   // Group programs by category
   const groupedPrograms = useMemo(() => {
@@ -68,20 +114,6 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
     return grouped;
   }, [filteredPrograms]);
 
-  // Map variant strings to database enum values
-  const getVariantFromProgramCategory = (variant: string) => {
-    switch (variant) {
-      case 'ongoing':
-        return 'ONGOING';
-      case 'open-application':
-        return 'OPEN_APPLICATION';
-      case 'upcoming':
-        return 'UPCOMING';
-      default:
-        return undefined;
-    }
-  };
-
   // Enhanced search params with program category
   const enhancedSearchParams = {
     ...searchParams,
@@ -93,8 +125,11 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
   };
 
   const handleViewDetails = (programId: string) => {
-    // Navigate to program details page
-    console.log('View details for program:', programId);
+    const program = enhancedPrograms.find(p => p.id === programId);
+    if (program) {
+      setSelectedProgram(program);
+      setIsModalOpen(true);
+    }
   };
 
   const handleApply = (programId: string) => {
@@ -118,17 +153,38 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
 
   const stats = getCategoryStats();
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Programs</h1>
+              <p className="text-sm text-gray-600">
+                Discover and join innovative programs tailored for healthcare startups
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Programs</h1>
-            <p className="text-gray-600">
-              Discover and join innovative programs tailored for healthcare startups
-            </p>
-          </div>
+                     <div>
+             <h1 className="text-2xl font-bold text-gray-900 mb-2">Programs</h1>
+             <p className="text-sm text-gray-600">
+               Discover and join innovative programs tailored for healthcare startups
+             </p>
+           </div>
           
           <div className="flex items-center space-x-3">
             {/* View Mode Toggle */}
@@ -244,10 +300,10 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
         {/* Ongoing Programs */}
         {groupedPrograms.ongoing.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-              <div className="w-2 h-8 bg-green-500 rounded-full mr-3"></div>
-              Ongoing Programs
-            </h2>
+                         <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+               <div className="w-2 h-6 bg-green-500 rounded-full mr-3"></div>
+               Ongoing Programs
+             </h2>
             <div className={cn(
               'grid gap-6',
               viewMode === 'grid' 
@@ -271,10 +327,10 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
         {/* Open Application Programs */}
         {groupedPrograms.openApplication.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-              <div className="w-2 h-8 bg-blue-500 rounded-full mr-3"></div>
-              Open Applications
-            </h2>
+                         <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+               <div className="w-2 h-6 bg-blue-500 rounded-full mr-3"></div>
+               Open Applications
+             </h2>
             <div className={cn(
               'grid gap-6',
               viewMode === 'grid' 
@@ -298,10 +354,10 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
         {/* Upcoming Programs */}
         {groupedPrograms.upcoming.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-              <div className="w-2 h-8 bg-purple-500 rounded-full mr-3"></div>
-              Upcoming Programs
-            </h2>
+                         <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+               <div className="w-2 h-6 bg-purple-500 rounded-full mr-3"></div>
+               Upcoming Programs
+             </h2>
             <div className={cn(
               'grid gap-6',
               viewMode === 'grid' 
@@ -333,8 +389,20 @@ export const ProgramsTab: React.FC<ProgramsTabProps> = ({ programs }) => {
               Try adjusting your search criteria or filters
             </p>
           </div>
-        )}
-      </div>
-    </div>
-  );
-};
+                 )}
+       </div>
+
+       {/* Program Details Modal */}
+       <ProgramDetailsModal
+         program={selectedProgram}
+         isOpen={isModalOpen}
+         onClose={() => {
+           setIsModalOpen(false);
+           setSelectedProgram(null);
+         }}
+         onApply={handleApply}
+         onConnect={handleConnect}
+       />
+     </div>
+   );
+ };

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DashboardTab } from '@/components/dashboard/DashboardTab';
 import { MentorsTab } from '@/components/dashboard/mentors';
@@ -11,8 +11,7 @@ import { ProfileCompletionGuard } from '@/components/dashboard/ProfileCompletion
 import { useDashboardStore } from '@/store/dashboardStore';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { User } from '@/types';
-import { mentorData } from '@/data/mentors';
-import { enhancedProgramCardData } from '@/data/programs';
+import { Program } from '@/types/programs';
 
 // Mock user data for development
 const mockUser: User = {
@@ -35,11 +34,60 @@ export default function DashboardPage() {
     setActiveTab 
   } = useDashboardStore();
 
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [mentors, setMentors] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMentorsLoading, setIsMentorsLoading] = useState(true);
+
   // Set mock user data on component mount
   useEffect(() => {
     setCurrentUser(mockUser);
     setActiveTab('dashboard');
   }, [setCurrentUser, setActiveTab]);
+
+  // Fetch programs from API
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/admin/programs');
+        if (response.ok) {
+          const data = await response.json();
+          setPrograms(data);
+        } else {
+          console.error('Failed to fetch programs:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching programs:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPrograms();
+  }, []);
+
+  // Fetch mentors from API
+  useEffect(() => {
+    const fetchMentors = async () => {
+      try {
+        setIsMentorsLoading(true);
+        const response = await fetch('/api/admin/mentors');
+        if (response.ok) {
+          const data = await response.json();
+          setMentors(data);
+        } else {
+          console.error('Failed to fetch mentors:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching mentors:', error);
+      } finally {
+        setIsMentorsLoading(false);
+      }
+    };
+
+    fetchMentors();
+  }, []);
 
   // Render content based on active tab
   const renderTabContent = () => {
@@ -49,7 +97,7 @@ export default function DashboardPage() {
       case 'programs':
         return (
           <ProfileCompletionGuard>
-            <ProgramsTab programs={enhancedProgramCardData} />
+            <ProgramsTab programs={programs} isLoading={isLoading} />
           </ProfileCompletionGuard>
         );
       case 'calendar':
@@ -63,7 +111,7 @@ export default function DashboardPage() {
       case 'mentors':
         return (
           <ProfileCompletionGuard>
-            <MentorsTab mentors={mentorData} />
+            <MentorsTab mentors={mentors} />
           </ProfileCompletionGuard>
         );
       default:

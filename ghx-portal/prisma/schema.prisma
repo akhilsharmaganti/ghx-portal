@@ -168,8 +168,8 @@ model User {
   programsApproved        Program[]                    @relation("ProgramApprover")
   programApplications     ProgramApplication[]         @relation("ApplicationUser")
   programApplicationsReviewed ProgramApplication[]     @relation("ApplicationReviewer")
-  mentorProfile          Mentor?
-  mentorApproved         Mentor[]                     @relation("MentorApprover")
+  // mentorProfile          Mentor?                    // Temporarily commented out
+  // mentorApproved         Mentor[]                   @relation("MentorApprover") // Temporarily commented out
   meetingsOrganized      Meeting[]                    @relation("MeetingOrganizer")
   meetingParticipants    MeetingParticipant[]
   userProfile            UserProfile?
@@ -297,9 +297,6 @@ model Program {
   whyJoinUs             String?           @map("why_join_us") @db.Text
   adminContactInfo      Json?             @map("admin_contact_info")
   selectedStartups      Json?             @map("selected_startups")
-  importantTimelines    Json?             @map("important_timelines")
-  mediaAssets           Json?             @map("media_assets")
-  testimonials          Json?             @map("testimonials")
   createdByAdminId      Int               @map("created_by_admin_id")
   approvedByAdminId     Int?              @map("approved_by_admin_id")
   createdAt             DateTime          @default(now()) @map("created_at")
@@ -425,50 +422,22 @@ model MentorCategory {
   // Relations
   parentCategory    MentorCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id], onDelete: SetNull)
   subcategories     MentorCategory[] @relation("CategoryHierarchy")
-  mentors           Mentor[]
-  subcategoryMentors Mentor[]        @relation("SubcategoryMentors")
+  // mentors           Mentor[]                    // Temporarily commented out
+  // subcategoryMentors Mentor[]                   @relation("SubcategoryMentors") // Temporarily commented out
 
   @@map("Mentor_Categories")
 }
 
 model Mentor {
-  id                    Int           @id @default(autoincrement()) @map("mentor_id")
-  userId                Int           @unique @map("user_id")
-  categoryId            Int           @map("category_id")
-  subcategoryId         Int?          @map("subcategory_id")
-  expertise             Json          @map("expertise")
-  experienceYears       Int?          @map("experience_years")
-  currentPosition       String?       @map("current_position") @db.VarChar(255)
-  currentCompany        String?       @map("current_company") @db.VarChar(255)
-  previousCompanies     Json?         @map("previous_companies")
-  education             Json?         @map("education")
-  certifications        Json?         @map("certifications")
-  achievements          Json?         @map("achievements")
-  mentoringStyle        String?       @map("mentoring_style")
-  mentoringApproach     String?       @map("mentoring_approach")
-  availability          Json?         @map("availability")
-  maxMentees            Int           @default(5) @map("max_mentees")
-  currentMentees        Int           @default(0) @map("current_mentees")
-  hourlyRate            Decimal?      @map("hourly_rate") @db.Decimal(10, 2)
-  currency              String        @default("USD") @db.VarChar(3)
-  rating                Decimal       @default(0.00) @map("rating") @db.Decimal(3, 2)
-  totalReviews          Int           @default(0) @map("total_reviews")
-  isApproved            Boolean       @default(false) @map("is_approved")
-  approvalNotes         String?       @map("approval_notes")
-  approvedByAdminId     Int?          @map("approved_by_admin_id")
-  approvedAt            DateTime?     @map("approved_at")
-  isActive              Boolean       @default(true) @map("is_active")
-  createdAt             DateTime      @default(now()) @map("created_at")
-  updatedAt             DateTime      @default(now()) @updatedAt @map("updated_at")
-  deletedAt             DateTime?     @map("deleted_at")
-
-  // Relations
-  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category              MentorCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  subcategory           MentorCategory? @relation("SubcategoryMentors", fields: [subcategoryId], references: [id], onDelete: SetNull)
-  approvedByAdmin       User?         @relation("MentorApprover", fields: [approvedByAdminId], references: [id], onDelete: SetNull)
-  meetings              Meeting[]
-  mentorRelationships   MentorUserRelationship[] @relation("MentorUser")
+  id            Int      @id @default(autoincrement()) @map("mentor_id")
+  name          String   @db.VarChar(255)
+  role          String   @db.VarChar(255)
+  company       String   @db.VarChar(255)
+  photo         String   @db.VarChar(500)
+  linkedinUrl   String   @db.VarChar(500) @map("linkedin_url")
+  expertise     String[] // Array of expertise areas
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("Mentors")
 }
@@ -490,7 +459,7 @@ model MentorUserRelationship {
   updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at")
 
   // Relations
-  mentor            Mentor            @relation("MentorUser", fields: [mentorId], references: [id], onDelete: Cascade)
+  // mentor            Mentor            @relation("MentorUser", fields: [mentorId], references: [id], onDelete: Cascade) // Temporarily commented out
   user              User              @relation("MenteeUser", fields: [userId], references: [id], onDelete: Cascade)
   organization      Organization?     @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   program           Program?          @relation(fields: [programId], references: [id], onDelete: SetNull)
@@ -524,7 +493,7 @@ model Meeting {
   // Relations
   organizer            User              @relation("MeetingOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
   program              Program?          @relation(fields: [programId], references: [id], onDelete: SetNull)
-  mentor               Mentor?           @relation(fields: [mentorId], references: [id], onDelete: SetNull)
+  // mentor               Mentor?           @relation(fields: [mentorId], references: [id], onDelete: SetNull) // Temporarily commented out
   participants         MeetingParticipant[]
 
   @@map("Meetings")

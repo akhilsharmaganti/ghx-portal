@@ -5,7 +5,7 @@ export interface Program {
   title: string;
   shortDescription: string;
   fullDescription: string;
-  category: ProgramCategory;
+  category: string; // Changed to string to match Prisma schema
   programCategory: 'ONGOING' | 'OPEN_APPLICATION' | 'UPCOMING';
   duration: string;
   requirements: string[];
@@ -16,40 +16,31 @@ export interface Program {
   currentParticipants: number;
   status: ProgramStatus;
   image: string;
-  mentorIds: string[];
   tags: string[];
   theme?: string;
   whyJoinUs?: string;
-  adminContactInfo?: AdminContactInfo;
-  selectedStartups?: SelectedStartup[];
-  importantTimelines?: ProgramTimeline[];
-  mediaAssets?: ProgramMedia[];
-  testimonials?: ProgramTestimonial[];
+  selectedStartups?: any[]; // Changed to any[] to match Prisma JSON field
   createdAt: string;
   updatedAt: string;
 }
 
 export type ProgramCategory = 
-  | 'MENTORSHIP'
-  | 'ACCELERATOR'
-  | 'WORKSHOP'
-  | 'FUNDING'
-  | 'NETWORKING'
-  | 'EDUCATION'
-  | 'COMPETITION';
+  | 'ONGOING'
+  | 'OPEN_APPLICATION'
+  | 'UPCOMING';
 
 export type ProgramStatus = 
+  | 'DRAFT'
+  | 'PUBLISHED'
   | 'ACTIVE'
-  | 'UPCOMING'
   | 'COMPLETED'
-  | 'PAUSED'
-  | 'CANCELLED';
+  | 'ARCHIVED';
 
 export interface ProgramCardProps {
   id: string;
   title: string;
   shortDescription: string;
-  category: ProgramCategory;
+  category: string;
   duration: string;
   startDate: string;
   status: ProgramStatus;
@@ -60,16 +51,26 @@ export interface ProgramCardProps {
   className?: string;
 }
 
+// Enhanced program card props for the dashboard
+export interface EnhancedProgramCardProps extends ProgramCardProps {
+  variant: 'ongoing' | 'open-application' | 'upcoming';
+  theme?: string;
+  whyJoinUs?: string;
+  hasTestimonials?: boolean;
+  hasTimeline?: boolean;
+  selectedStartupsCount?: number;
+}
+
 export interface ProgramFilters {
   search: string;
-  category: ProgramCategory | '';
+  category: string;
   status: ProgramStatus | '';
   duration: string;
 }
 
 export interface ProgramSearchParams {
   search?: string;
-  category?: ProgramCategory;
+  category?: string;
   status?: ProgramStatus;
   programCategory?: 'ONGOING' | 'OPEN_APPLICATION' | 'UPCOMING';
   duration?: string;

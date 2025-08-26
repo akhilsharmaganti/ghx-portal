@@ -3,22 +3,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Users, Clock, MapPin, Star, Play, Image as ImageIcon } from 'lucide-react';
-import { ProgramCardProps } from '@/types/programs';
+import { ProgramCardProps, EnhancedProgramCardProps } from '@/types/programs';
 import { cn } from '@/utils';
 
-interface EnhancedProgramCardProps extends ProgramCardProps {
-  variant?: 'ongoing' | 'open-application' | 'upcoming';
-  theme?: string;
-  whyJoinUs?: string;
-  hasTestimonials?: boolean;
-  hasTimeline?: boolean;
-  selectedStartupsCount?: number;
+interface ProgramCardExtendedProps extends EnhancedProgramCardProps {
   onViewDetails?: (programId: string) => void;
   onApply?: (programId: string) => void;
   onConnect?: (programId: string) => void;
 }
 
-export const ProgramCard: React.FC<EnhancedProgramCardProps> = ({
+export const ProgramCard: React.FC<ProgramCardExtendedProps> = ({
   id,
   title,
   shortDescription,

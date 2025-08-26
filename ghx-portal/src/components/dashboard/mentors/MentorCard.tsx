@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ExternalLink, Star } from 'lucide-react';
@@ -27,6 +27,22 @@ export const MentorCard: React.FC<MentorCardProps> = ({
   expertise,
   className = ''
 }) => {
+  const [imageError, setImageError] = useState(false);
+
+  // Debug logging to help identify data issues
+  console.log('MentorCard received data:', { name, role, company, photo, linkedinUrl, expertise });
+
+  // Safety checks for required data
+  if (!name || !role || !company) {
+    console.warn('MentorCard: Missing required data:', { name, role, company });
+    return (
+      <div className="bg-gray-100 rounded-xl p-6 text-center text-gray-500">
+        <div className="text-2xl mb-2">⚠️</div>
+        <div>Incomplete mentor data</div>
+      </div>
+    );
+  }
+
   // Single Responsibility: Handle LinkedIn redirect
   const handleCardClick = () => {
     if (linkedinUrl) {
@@ -36,7 +52,13 @@ export const MentorCard: React.FC<MentorCardProps> = ({
 
   // Single Responsibility: Format expertise display
   const formatExpertise = (expertise: string[]) => {
+    if (!expertise || !Array.isArray(expertise)) return 'No expertise listed';
     return expertise.slice(0, 2).join(' • ');
+  };
+
+  // Single Responsibility: Handle image load error
+  const handleImageError = () => {
+    setImageError(true);
   };
 
   return (
@@ -63,14 +85,25 @@ export const MentorCard: React.FC<MentorCardProps> = ({
       {/* Profile Photo Section */}
       <div className="relative h-64 sm:h-72 md:h-80 lg:h-96 bg-gradient-to-br from-primary-50 to-primary-100">
         <div className="absolute inset-0 flex items-center justify-center p-4">
-          <Image
-            src={photo}
-            alt={`${name} profile photo`}
-            width={200}
-            height={250}
-            className="w-full h-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] object-cover rounded-lg shadow-lg"
-            priority
-          />
+          {!imageError && photo ? (
+            <Image
+              src={photo}
+              alt={`${name} profile photo`}
+              width={200}
+              height={250}
+              className="w-full h-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] object-cover rounded-lg shadow-lg"
+              priority
+              onError={handleImageError}
+              onLoad={() => setImageError(false)}
+            />
+          ) : (
+            <div className="w-full h-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] bg-gray-200 rounded-lg shadow-lg flex items-center justify-center text-gray-500 text-center p-4">
+              <div>
+                <div className="text-4xl mb-2">👤</div>
+                <div className="text-sm">{name}</div>
+              </div>
+            </div>
+          )}
         </div>
         
         {/* LinkedIn Icon Overlay */}

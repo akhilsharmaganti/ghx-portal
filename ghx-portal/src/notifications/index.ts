@@ -18,6 +18,3 @@ export {
 // TODO: Add other services as we build them
 // export { MentorNotificationService, mentorNotificationService } from './mentors/mentor-notifications.service';
 // export { CalendarNotificationService, calendarNotificationService } from './calendar/calendar-notifications.service';
-
-// Re-export types for convenience
-export type { NotificationRequest, NotificationResult } from './core/notification.service';

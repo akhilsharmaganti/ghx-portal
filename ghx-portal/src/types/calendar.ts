@@ -87,3 +87,52 @@ export interface BookingFormData {
   type: 'MENTOR_SESSION' | 'CONSULTATION' | 'WORKSHOP';
   notes?: string;
 }
+
+// New types for KinderWatch-style calendar
+export interface SessionSchedule {
+  id: string;
+  date: Date;
+  time: string;
+  duration: number;
+  mentorId: string;
+  mentorName: string;
+  mentorRole: string;
+  mentorCompany: string;
+  mentorPhoto?: string;
+  mentorLinkedinUrl?: string;
+  mentorExpertise: string[];
+  status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  notes?: string;
+  recommendations?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface MentorRecommendation {
+  id: string;
+  mentorId: string;
+  mentorName: string;
+  recommendation: string;
+  category: 'COMMUNICATION' | 'BEHAVIOR' | 'SKILLS' | 'GENERAL';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  createdAt: Date;
+}
+
+export interface CalendarDay {
+  date: Date;
+  hasEvents: boolean;
+  eventCount: number;
+  isToday: boolean;
+  isSelected: boolean;
+  isCurrentMonth: boolean;
+  events: CalendarEvent[];
+}
+
+export interface CalendarMonth {
+  year: number;
+  month: number;
+  monthName: string;
+  days: CalendarDay[];
+  previousMonth: Date;
+  nextMonth: Date;
+}

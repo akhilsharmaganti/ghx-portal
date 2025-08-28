@@ -63,12 +63,24 @@ export async function POST(request: NextRequest) {
       case 'program_created':
         // Test program creation notification
         result = await programNotificationService.notifyProgramCreated({
-          id: programData?.id || 999,
-          name: programData?.name || 'Test HealthTech Program',
+          id: programData?.id || '999',
+          title: programData?.title || 'Test HealthTech Program',
+          shortDescription: programData?.shortDescription || 'A test program for healthtech startups',
+          fullDescription: programData?.fullDescription || 'This is a comprehensive test program description',
           category: programData?.category || 'ACCELERATOR',
-          status: programData?.status || 'PUBLISHED',
+          programCategory: programData?.programCategory || 'OPEN_APPLICATION',
+          duration: programData?.duration || '6 months',
+          requirements: programData?.requirements || ['Healthcare focus', 'MVP ready'],
+          benefits: programData?.benefits || ['Mentorship', 'Funding access'],
+          startDate: programData?.startDate || '2025-01-01',
+          endDate: programData?.endDate || '2025-06-30',
           maxParticipants: programData?.maxParticipants || 50,
-          currentParticipants: programData?.currentParticipants || 0
+          currentParticipants: programData?.currentParticipants || 0,
+          status: programData?.status || 'PUBLISHED',
+          image: programData?.image || 'https://via.placeholder.com/400x200',
+          tags: programData?.tags || ['healthtech', 'accelerator'],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         });
         break;
         
@@ -76,10 +88,24 @@ export async function POST(request: NextRequest) {
         // Test program update notification
         result = await programNotificationService.notifyProgramUpdated(
           {
-            id: programData?.id || 999,
-            name: programData?.name || 'Test HealthTech Program',
+            id: programData?.id || '999',
+            title: programData?.title || 'Test HealthTech Program',
+            shortDescription: programData?.shortDescription || 'A test program for healthtech startups',
+            fullDescription: programData?.fullDescription || 'This is a comprehensive test program description',
             category: programData?.category || 'ACCELERATOR',
-            status: programData?.status || 'ACTIVE'
+            programCategory: programData?.programCategory || 'OPEN_APPLICATION',
+            duration: programData?.duration || '6 months',
+            requirements: programData?.requirements || ['Healthcare focus', 'MVP ready'],
+            benefits: programData?.benefits || ['Mentorship', 'Funding access'],
+            startDate: programData?.startDate || '2025-01-01',
+            endDate: programData?.endDate || '2025-06-30',
+            maxParticipants: programData?.maxParticipants || 50,
+            currentParticipants: programData?.currentParticipants || 0,
+            status: programData?.status || 'ACTIVE',
+            image: programData?.image || 'https://via.placeholder.com/400x200',
+            tags: programData?.tags || ['healthtech', 'accelerator'],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           },
           programData?.changes || ['Updated requirements', 'Extended deadline']
         );
@@ -89,10 +115,24 @@ export async function POST(request: NextRequest) {
         // Test program status change notification
         result = await programNotificationService.notifyProgramStatusChanged(
           {
-            id: programData?.id || 999,
-            name: programData?.name || 'Test HealthTech Program',
+            id: programData?.id || '999',
+            title: programData?.title || 'Test HealthTech Program',
+            shortDescription: programData?.shortDescription || 'A test program for healthtech startups',
+            fullDescription: programData?.fullDescription || 'This is a comprehensive test program description',
             category: programData?.category || 'ACCELERATOR',
-            status: programData?.status || 'PUBLISHED'
+            programCategory: programData?.programCategory || 'OPEN_APPLICATION',
+            duration: programData?.duration || '6 months',
+            requirements: programData?.requirements || ['Healthcare focus', 'MVP ready'],
+            benefits: programData?.benefits || ['Mentorship', 'Funding access'],
+            startDate: programData?.startDate || '2025-01-01',
+            endDate: programData?.endDate || '2025-06-30',
+            maxParticipants: programData?.maxParticipants || 50,
+            currentParticipants: programData?.currentParticipants || 0,
+            status: programData?.status || 'PUBLISHED',
+            image: programData?.image || 'https://via.placeholder.com/400x200',
+            tags: programData?.tags || ['healthtech', 'accelerator'],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           },
           'DRAFT',
           'PUBLISHED'
@@ -103,10 +143,24 @@ export async function POST(request: NextRequest) {
         // Test program deadline notification
         result = await programNotificationService.notifyProgramDeadlineApproaching(
           {
-            id: programData?.id || 999,
-            name: programData?.name || 'Test HealthTech Program',
+            id: programData?.id || '999',
+            title: programData?.title || 'Test HealthTech Program',
+            shortDescription: programData?.shortDescription || 'A test program for healthtech startups',
+            fullDescription: programData?.fullDescription || 'This is a comprehensive test program description',
             category: programData?.category || 'ACCELERATOR',
-            status: programData?.status || 'PUBLISHED'
+            programCategory: programData?.programCategory || 'OPEN_APPLICATION',
+            duration: programData?.duration || '6 months',
+            requirements: programData?.requirements || ['Healthcare focus', 'MVP ready'],
+            benefits: programData?.benefits || ['Mentorship', 'Funding access'],
+            startDate: programData?.startDate || '2025-01-01',
+            endDate: programData?.endDate || '2025-06-30',
+            maxParticipants: programData?.maxParticipants || 50,
+            currentParticipants: programData?.currentParticipants || 0,
+            status: programData?.status || 'PUBLISHED',
+            image: programData?.image || 'https://via.placeholder.com/400x200',
+            tags: programData?.tags || ['healthtech', 'accelerator'],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           },
           programData?.daysLeft || 3
         );
@@ -116,10 +170,24 @@ export async function POST(request: NextRequest) {
         // Test custom notification
         result = await programNotificationService.sendCustomNotification(
           {
-            id: programData?.id || 999,
-            name: programData?.name || 'Test HealthTech Program',
+            id: programData?.id || '999',
+            title: programData?.title || 'Test HealthTech Program',
+            shortDescription: programData?.shortDescription || 'A test program for healthtech startups',
+            fullDescription: programData?.fullDescription || 'This is a comprehensive test program description',
             category: programData?.category || 'ACCELERATOR',
-            status: programData?.status || 'PUBLISHED'
+            programCategory: programData?.programCategory || 'OPEN_APPLICATION',
+            duration: programData?.duration || '6 months',
+            requirements: programData?.requirements || ['Healthcare focus', 'MVP ready'],
+            benefits: programData?.benefits || ['Mentorship', 'Funding access'],
+            startDate: programData?.startDate || '2025-01-01',
+            endDate: programData?.endDate || '2025-06-30',
+            maxParticipants: programData?.maxParticipants || 50,
+            currentParticipants: programData?.currentParticipants || 0,
+            status: programData?.status || 'PUBLISHED',
+            image: programData?.image || 'https://via.placeholder.com/400x200',
+            tags: programData?.tags || ['healthtech', 'accelerator'],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           },
           'custom_event',
           programData?.title || 'Custom Event',

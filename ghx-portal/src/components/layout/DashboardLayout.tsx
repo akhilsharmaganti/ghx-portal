@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDashboardStore } from '@/store/dashboardStore';
-import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { cn } from '@/utils';
 
@@ -16,7 +15,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children, 
   className 
 }) => {
-  const { sidebarCollapsed } = useDashboardStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -44,14 +42,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar className={cn(
-        'lg:translate-x-0',
-        isMobile && isMobileMenuOpen ? 'translate-x-0' : 'lg:translate-x-0',
-        isMobile && !isMobileMenuOpen ? '-translate-x-full' : 'lg:translate-x-0'
-      )} />
+      {/* Header with Top Navigation */}
+      <Header onMobileMenuToggle={handleMobileMenuToggle} />
 
-      {/* Mobile Overlay */}
+      {/* Mobile Overlay - Keep for potential mobile menu */}
       <AnimatePresence>
         {isMobile && isMobileMenuOpen && (
           <motion.div
@@ -65,33 +59,25 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
-      <div className={cn(
-        'transition-all duration-300 ease-in-out',
-        sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-70'
+      {/* Main Content - Full Width */}
+      <main className={cn(
+        'p-4 lg:p-6',
+        'min-h-[calc(100vh-8rem)]', // Adjusted for header height
+        'w-full', // Full width
+        className
       )}>
-        {/* Header */}
-        <Header onMobileMenuToggle={handleMobileMenuToggle} />
-
-        {/* Page Content */}
-        <main className={cn(
-          'p-4 lg:p-6',
-          'min-h-[calc(100vh-4rem)]',
-          className
-        )}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key="dashboard-content"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
-        </main>
-      </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="dashboard-content"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </main>
     </div>
   );
 };

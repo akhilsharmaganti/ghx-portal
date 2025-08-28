@@ -1,8 +1,8 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponseBuilder, NextApiResponse, ApiErrorHandler, ErrorCode } from '@/lib/api-utils';
 import { RouteGuard, AuthContextFactory } from '@/lib/auth/middleware';
 
-// Force dynamic rendering for this API route
+// Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
 // Single Responsibility: Admin statistics data

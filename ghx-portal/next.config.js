@@ -15,6 +15,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+  // Prisma build configuration
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('@prisma/client');
+    }
+    return config;
+  },
   // Development optimizations
   experimental: {
     turbo: {

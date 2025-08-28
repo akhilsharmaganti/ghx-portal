@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProgramService } from '@/services/admin/programs-api.service';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // GET /api/admin/programs - Get all programs
 export async function GET() {
   try {
+    // Check if we're in build mode
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json([]);
+    }
+    
     const programs = await ProgramService.getAllPrograms();
     return NextResponse.json(programs);
   } catch (error) {
@@ -18,6 +26,11 @@ export async function GET() {
 // POST /api/admin/programs - Create new program
 export async function POST(request: NextRequest) {
   try {
+    // Check if we're in build mode
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json({ error: 'Service unavailable during build' }, { status: 503 });
+    }
+    
     console.log('🔍 API: Received program creation request');
     const programData = await request.json();
     console.log('📝 API: Program data received:', JSON.stringify(programData, null, 2));

@@ -1,13 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 // Single Responsibility: Mentor business logic and data transformation
 export class MentorService {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   // Create a new mentor
   async createMentor(mentorData: any) {
     try {
@@ -16,7 +10,7 @@ export class MentorService {
       const prismaData = MentorDataTransformer.transformMentorToPrisma(mentorData);
       console.log('📝 Transformed data for Prisma:', prismaData);
 
-      const mentor = await this.prisma.mentor.create({
+      const mentor = await prisma.mentor.create({
         data: prismaData
       });
 
@@ -33,7 +27,7 @@ export class MentorService {
     try {
       console.log('🔍 Attempting to fetch all mentors from database...');
       
-      const mentors = await this.prisma.mentor.findMany({
+      const mentors = await prisma.mentor.findMany({
         orderBy: { createdAt: 'desc' }
       });
 
@@ -50,7 +44,7 @@ export class MentorService {
     try {
       console.log('🔍 Attempting to fetch mentor with ID:', id);
       
-      const mentor = await this.prisma.mentor.findUnique({
+      const mentor = await prisma.mentor.findUnique({
         where: { id }
       });
 
@@ -74,7 +68,7 @@ export class MentorService {
       const prismaData = MentorDataTransformer.transformMentorToPrisma(mentorData);
       console.log('📝 Transformed data for Prisma:', prismaData);
 
-      const mentor = await this.prisma.mentor.update({
+      const mentor = await prisma.mentor.update({
         where: { id },
         data: prismaData
       });
@@ -92,7 +86,7 @@ export class MentorService {
     try {
       console.log('🔍 Attempting to delete mentor with ID:', id);
       
-      const mentor = await this.prisma.mentor.delete({
+      const mentor = await prisma.mentor.delete({
         where: { id }
       });
 

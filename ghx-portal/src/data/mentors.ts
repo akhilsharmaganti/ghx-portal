@@ -9,7 +9,8 @@ export const mentorData: MentorCardProps[] = [
     company: 'Government of India Mentor',
     photo: '/mentor-images/dr_raju.jpg',
     linkedinUrl: 'https://www.linkedin.com/in/dr-raju-m',
-    expertise: ['Clinical Research', 'HealthTech', 'Government Relations']
+    expertise: ['Clinical Research', 'HealthTech', 'Government Relations'],
+    description: 'Dr. Raju M is a seasoned clinical research expert with over 20 years of experience in healthcare technology and government relations. He specializes in helping healthtech startups navigate regulatory requirements and establish partnerships with government institutions.'
   },
   {
     id: '2',
@@ -18,7 +19,8 @@ export const mentorData: MentorCardProps[] = [
     company: 'Ex- Growth Marketer, Healthify',
     photo: '/mentor-images/ved.jpg',
     linkedinUrl: 'https://www.linkedin.com/in/vedanarayanan',
-    expertise: ['', 'Digital Marketing', 'Healthcare Marketing']
+    expertise: ['Digital Marketing', 'Healthcare Marketing', 'Growth Strategy'],
+    description: 'Vedanarayanan is a marketing expert with a focus on digital marketing and brand strategy. He has helped numerous startups grow their online presence and has extensive experience in healthcare marketing from his time at Healthify.'
   },
   {
     id: '3',
@@ -27,16 +29,18 @@ export const mentorData: MentorCardProps[] = [
     company: 'Advisor - Managing Partner, Thinkuvate',
     photo: '/mentor-images/appu.jpg',
     linkedinUrl: 'https://www.linkedin.com/in/addison-appu',
-    expertise: ['Investor Relations', 'Go-to-Market', 'Strategy']
+    expertise: ['Investor Relations', 'Go-to-Market', 'Strategy'],
+    description: 'Addison Appu is a strategic advisor specializing in investor readiness and go-to-market strategies. As Managing Partner at Thinkuvate, he helps startups prepare for funding rounds and develop effective market entry strategies.'
   },
   {
     id: '4',
     name: 'Shruti Jain',
-    role: 'Investor readiness - Founder',
+    role: 'Investor Readiness - Founder',
     company: 'Prosperify Advisors',
     photo: '/mentor-images/shruthi.jpg',
     linkedinUrl: 'https://www.linkedin.com/in/shruti-jain',
-    expertise: ['Investor Relations', 'Founder Coaching', 'Financial Advisory']
+    expertise: ['Investor Relations', 'Founder Coaching', 'Financial Advisory'],
+    description: 'Shruti Jain is a founder coach and financial advisor who specializes in helping entrepreneurs prepare for investor meetings. She provides comprehensive guidance on financial planning, pitch deck creation, and investor relations.'
   },
   {
     id: '5',
@@ -45,7 +49,8 @@ export const mentorData: MentorCardProps[] = [
     company: 'Dr. Reddy\'s Laboratories',
     photo: '/mentor-images/joheb.jpg',
     linkedinUrl: 'https://www.linkedin.com/in/zoheb-muhammad',
-    expertise: ['Regulatory Affairs', 'Pharmaceuticals', 'Compliance']
+    expertise: ['Regulatory Affairs', 'Pharmaceuticals', 'Compliance'],
+    description: 'Zoheb Muhammad is a regulatory affairs expert with extensive experience in pharmaceuticals and compliance. He helps healthtech startups understand and navigate complex regulatory requirements in the healthcare industry.'
   },
   {
     id: '6',
@@ -54,7 +59,8 @@ export const mentorData: MentorCardProps[] = [
     company: 'Practo',
     photo: '/mentor-images/ajay.jpg',
     linkedinUrl: 'https://www.linkedin.com/in/ajay-rungta',
-    expertise: ['Go-to-Market', 'Startup Growth', 'Healthcare']
+    expertise: ['Go-to-Market', 'Startup Growth', 'Healthcare'],
+    description: 'Ajay Rungta is a go-to-market expert who was part of the founding team at Practo. He provides valuable insights on startup growth, healthcare market strategies, and building scalable business models.'
   }
 ];
 

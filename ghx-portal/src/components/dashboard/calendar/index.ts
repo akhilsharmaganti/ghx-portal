@@ -1,3 +1,4 @@
 export { Calendar } from './Calendar';
-export { EventDetailsPanel } from './EventDetailsPanel';
-export { BookingForm } from './BookingForm';
+export { MentorProfilePanel } from './MentorProfilePanel';
+export { UpcomingSessionsTable } from './UpcomingSessionsTable';
+export type { UpcomingSession } from './UpcomingSessionsTable';

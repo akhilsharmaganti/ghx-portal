@@ -63,75 +63,72 @@ export const MentorsTab: React.FC<MentorsTabProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`space-y-6 ${className}`}
-    >
-      {/* Header Section */}
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-            <Users className="w-6 h-6 text-primary-600" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900">MENTORS</h1>
+    <div className="min-h-screen bg-white">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className={`space-y-8 p-6 lg:p-8 ${className}`}
+      >
+        {/* Header Section - Left Aligned, No Description */}
+        <div className="text-left mb-8">
+          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">Mentors</h1>
         </div>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Connect with experienced professionals who can guide your startup journey. 
-          Click on any mentor card to view their LinkedIn profile and connect.
-        </p>
-      </div>
 
-      {/* Search and Filter Section */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        {/* Search Bar */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Search mentors by name, role, or expertise..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200"
+        {/* Search and Filter Section - Horizontal Layout */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-center justify-between">
+          {/* Search Bar - Prominent positioning */}
+          <div className="relative flex-1 max-w-lg w-full">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search mentors"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full pl-12 pr-4 py-3 lg:py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base lg:text-lg"
+            />
+          </div>
+
+          {/* Expertise Filter - Modern dropdown */}
+          <div className="flex items-center space-x-3 w-full lg:w-auto">
+            <Filter className="w-5 h-5 text-gray-500" />
+            <select
+              value={selectedExpertise}
+              onChange={(e) => handleExpertiseFilter(e.target.value)}
+              className="px-4 lg:px-6 py-3 lg:py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base lg:text-lg bg-white w-full lg:w-auto"
+            >
+              {expertiseOptions.map((expertise) => (
+                <option key={expertise} value={expertise}>
+                  {expertise === 'all' ? 'All Expertise' : expertise}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Results Count - Subtle display */}
+        {searchTerm || selectedExpertise !== 'all' ? (
+          <div className="text-sm text-gray-500 text-center">
+            Showing {filteredMentors.length} of {mentors.length} mentors
+            {searchTerm && ` matching "${searchTerm}"`}
+            {selectedExpertise !== 'all' && ` in ${selectedExpertise}`}
+          </div>
+        ) : null}
+
+        {/* Mentors Grid - No gaps, compact design */}
+        <div className="w-full">
+          <MentorsGrid
+            mentors={filteredMentors}
+            gridCols={{
+              sm: 1,
+              md: 2,
+              lg: 3,
+              xl: 3
+            }}
+            gap="gap-0"
           />
         </div>
-
-        {/* Expertise Filter */}
-        <div className="flex items-center space-x-2">
-          <Filter className="w-5 h-5 text-gray-500" />
-          <select
-            value={selectedExpertise}
-            onChange={(e) => handleExpertiseFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200"
-          >
-            {expertiseOptions.map((expertise) => (
-              <option key={expertise} value={expertise}>
-                {expertise === 'all' ? 'All Expertise' : expertise}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Results Count */}
-      <div className="text-sm text-gray-600">
-        Showing {filteredMentors.length} of {mentors.length} mentors
-        {searchTerm && ` matching "${searchTerm}"`}
-        {selectedExpertise !== 'all' && ` in ${selectedExpertise}`}
-      </div>
-
-      {/* Mentors Grid */}
-      <MentorsGrid
-        mentors={filteredMentors}
-        gridCols={{
-          sm: 1,
-          md: 2,
-          lg: 3,
-          xl: 3
-        }}
-        gap="gap-6"
-      />
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };

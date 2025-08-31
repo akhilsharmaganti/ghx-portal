@@ -14,7 +14,9 @@ import {
   LogOut, 
   User,
   ChevronDown,
-  Menu
+  Menu,
+  X,
+  ChevronRight
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -30,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { user: authUser, signOut } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Use Firebase auth user if available, otherwise fall back to dashboard store user
   const currentUser: AppUser | null = authUser || dashboardUser;
@@ -69,6 +72,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId as any);
+    // Close mobile nav on tab click
+    setIsMobileNavOpen(false);
   };
 
   const handleUserMenuToggle = () => {
@@ -102,6 +107,10 @@ export const Header: React.FC<HeaderProps> = ({
     setIsUserMenuOpen(false);
   };
 
+  const toggleMobileNav = () => {
+    setIsMobileNavOpen(!isMobileNavOpen);
+  };
+
   return (
     <header className={cn(
       'sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm',
@@ -114,11 +123,15 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center space-x-4">
           {/* Mobile Menu Button */}
           <button
-            onClick={onMobileMenuToggle}
+            onClick={toggleMobileNav}
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-            aria-label="Toggle mobile menu"
+            aria-label="Toggle mobile navigation"
           >
-            <Menu className="w-5 h-5 text-gray-600" />
+            {isMobileNavOpen ? (
+              <X className="w-5 h-5 text-gray-600" />
+            ) : (
+              <Menu className="w-5 h-5 text-gray-600" />
+            )}
           </button>
 
           {/* Logo */}
@@ -129,8 +142,8 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-lg font-semibold text-gray-900">Portal</span>
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2 flex-1 max-w-md">
+          {/* Search Bar - Hidden on mobile, visible on tablet+ */}
+          <div className="hidden sm:flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2 flex-1 max-w-md">
             <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
@@ -275,8 +288,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <nav className="flex items-center space-x-1 px-4 pb-3">
+      {/* Desktop Navigation Tabs - Hidden on mobile, visible on tablet+ */}
+      <nav className="hidden md:flex items-center justify-end space-x-1 px-4 pb-3">
         {navigationConfig.map((tab) => {
           const IconComponent = iconMap[tab.icon as keyof typeof iconMap];
           const isActive = activeTab === tab.id;
@@ -288,17 +301,17 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => handleTabClick(tab.id)}
               className={cn(
                 'flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200',
-                'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                 isActive 
-                  ? 'bg-primary-50 text-primary-700 border-b-2 border-primary-600' 
-                  : 'text-gray-700 hover:text-gray-900'
+                  ? 'text-gray-900 border-b-2 border-blue-600' 
+                  : 'text-gray-900 hover:text-gray-700'
               )}
               aria-label={tab.label}
             >
               <IconComponent 
                 className={cn(
                   'w-4 h-4 flex-shrink-0',
-                  isActive ? 'text-primary-600' : 'text-gray-500'
+                  isActive ? 'text-blue-600' : 'text-gray-500'
                 )} 
               />
               <span className="text-sm font-medium whitespace-nowrap">
@@ -308,6 +321,153 @@ export const Header: React.FC<HeaderProps> = ({
           );
         })}
       </nav>
+
+      {/* Mobile Navigation Overlay */}
+      <AnimatePresence>
+        {isMobileNavOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={toggleMobileNav}
+            />
+            
+            {/* Mobile Navigation Panel */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 lg:hidden"
+            >
+              {/* Mobile Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">GHX</span>
+                  </div>
+                  <span className="text-lg font-semibold text-gray-900">Portal</span>
+                </div>
+                <button
+                  onClick={toggleMobileNav}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                  aria-label="Close mobile navigation"
+                >
+                  <X className="w-5 h-5 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Mobile Search */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2">
+                  <Search className="w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search programs, mentors, events..."
+                    className="bg-transparent border-none outline-none text-sm text-gray-900 placeholder-gray-500 flex-1"
+                  />
+                </div>
+              </div>
+
+              {/* Mobile Navigation Tabs */}
+              <div className="p-4">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  Navigation
+                </h3>
+                <nav className="space-y-1">
+                  {navigationConfig.map((tab) => {
+                    const IconComponent = iconMap[tab.icon as keyof typeof iconMap];
+                    const isActive = activeTab === tab.id;
+                    
+                    return (
+                      <button
+                        key={tab.id}
+                        data-tab={tab.id}
+                        onClick={() => handleTabClick(tab.id)}
+                        className={cn(
+                          'w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200',
+                          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                          isActive 
+                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' 
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        )}
+                        aria-label={tab.label}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <IconComponent 
+                            className={cn(
+                              'w-5 h-5 flex-shrink-0',
+                              isActive ? 'text-blue-600' : 'text-gray-500'
+                            )} 
+                          />
+                          <span className="text-sm font-medium">
+                            {tab.label}
+                          </span>
+                        </div>
+                        <ChevronRight className={cn(
+                          'w-4 h-4 transition-transform duration-200',
+                          isActive ? 'text-blue-600 rotate-90' : 'text-gray-400'
+                        )} />
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              {/* Mobile User Info */}
+              {currentUser && (
+                <div className="p-4 border-t border-gray-200 mt-auto">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                      <span className="text-primary-600 font-semibold text-sm">
+                        {getUserInitials(currentUser)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {getUserDisplayName(currentUser)}
+                      </p>
+                      <p className="text-xs text-gray-500 capitalize">
+                        {getUserRole(currentUser)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <button
+                      onClick={handleProfileClick}
+                      className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Profile</span>
+                    </button>
+                    
+                    <button
+                      onClick={handleSettingsClick}
+                      className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Settings</span>
+                    </button>
+                    
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-error-600 hover:bg-error-50 rounded-lg transition-colors duration-200"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

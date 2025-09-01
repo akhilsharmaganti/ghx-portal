@@ -37,11 +37,11 @@ export interface MentorAvailability {
   dayOfWeek: number; // 0-6 (Sunday-Saturday)
   startTime: string; // "09:00"
   endTime: string;   // "17:00"
-  timeSlots: TimeSlot[];
+  timeSlots: CalendarTimeSlot[];
   isActive: boolean;
 }
 
-export interface TimeSlot {
+export interface CalendarTimeSlot {
   id: string;
   startTime: string;
   endTime: string;

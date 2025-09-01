@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Calendar } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // Single Responsibility: Mentor card display and interaction
 export interface MentorCardProps {
@@ -20,6 +21,7 @@ export interface MentorCardProps {
 
 // Reusable component with clear interface
 export const MentorCard: React.FC<MentorCardProps> = ({
+  id,
   name,
   role,
   company,
@@ -30,6 +32,7 @@ export const MentorCard: React.FC<MentorCardProps> = ({
   className = ''
 }) => {
   const [imageError, setImageError] = useState(false);
+  const router = useRouter();
 
   // Safety checks for required data
   if (!name || !role || !company) {
@@ -44,8 +47,9 @@ export const MentorCard: React.FC<MentorCardProps> = ({
 
   // Single Responsibility: Handle session booking
   const handleBookSession = () => {
-    // TODO: Implement session booking functionality
-    console.log('Book session with:', name);
+    // Navigate to session booking page with mentor ID
+    console.log('Navigating to book session for mentor:', id, name);
+    router.push(`/mentors/${id}/book-session`);
   };
 
   // Single Responsibility: Handle LinkedIn redirect

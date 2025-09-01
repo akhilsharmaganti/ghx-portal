@@ -1,4 +1,4 @@
-import { CalendarEvent, Meeting, MentorAvailability, SessionSchedule } from '@/types/calendar';
+import { CalendarEvent, Meeting, MentorAvailability, SessionSchedule, CalendarTimeSlot } from '@/types/calendar';
 
 // Mock data for calendar events
 export const calendarEvents: CalendarEvent[] = [
@@ -179,7 +179,7 @@ export const mentorAvailabilityData: MentorAvailability[] = [
       { id: '1', startTime: '09:00', endTime: '09:30', duration: 30, isAvailable: true, isBooked: false },
       { id: '2', startTime: '10:00', endTime: '10:30', duration: 30, isAvailable: true, isBooked: false },
       { id: '3', startTime: '14:00', endTime: '14:30', duration: 30, isAvailable: true, isBooked: false }
-    ]
+    ] as CalendarTimeSlot[]
   }
 ];
 
@@ -244,7 +244,7 @@ export const getFeaturedMentor = () => {
     company: 'Ex- Growth Marketer, Healthify',
     photo: 'https://ui-avatars.com/api/?name=Vedanarayanan&background=3B82F6&color=fff',
     linkedinUrl: 'https://linkedin.com/in/vedanarayanan',
-    expertise: ['Clinical Research', 'HealthTech'],
+    expertise: ['Clinical Research', 'HealthTech'] as string[],
     description: 'Vedanarayanan is a marketing advisor with extensive experience in Clinical Research and HealthTech. They provide valuable guidance and mentorship to help startups accelerate their growth and achieve their goals. With over 15+ years of experience in helping startups scale, Vedanarayanan has a proven track record of success. They specialize in various sectors including SaaS, e-commerce, and mobile applications. Their academic background includes a Ph.D. in Business Administration, and they are passionate about mentoring the next generation of entrepreneurs.'
   };
 };

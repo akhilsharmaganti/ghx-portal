@@ -96,8 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const handleProfileClick = () => {
-    // TODO: Navigate to profile
-    console.log('Profile clicked');
+    setActiveTab('profile');
     setIsUserMenuOpen(false);
   };
 
@@ -114,59 +113,58 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn(
       'sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm',
-      'flex flex-col',
       className
     )}>
-      {/* Top Bar - Logo, Search, Notifications, User */}
+      {/* Single Line Navigation - Logo, Tabs, Notifications, User */}
       <div className="flex items-center justify-between px-4 py-3">
-        {/* Left Section */}
-        <div className="flex items-center space-x-4">
-          {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMobileNav}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-            aria-label="Toggle mobile navigation"
-          >
-            {isMobileNavOpen ? (
-              <X className="w-5 h-5 text-gray-600" />
-            ) : (
-              <Menu className="w-5 h-5 text-gray-600" />
-            )}
-          </button>
-
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">GHX</span>
-            </div>
-            <span className="text-lg font-semibold text-gray-900">Portal</span>
+        {/* Left Section - Logo */}
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">GHX</span>
           </div>
-
-          {/* Search Bar - Hidden on mobile, visible on tablet+ */}
-          <div className="hidden sm:flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2 flex-1 max-w-md">
-            <Search className="w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search programs, mentors, events..."
-              className="bg-transparent border-none outline-none text-sm text-gray-900 placeholder-gray-500 flex-1"
-            />
-          </div>
+          <span className="text-lg font-semibold text-gray-900">Portal</span>
         </div>
 
-        {/* Right Section */}
-        <div className="flex items-center space-x-3">
-          {/* Notifications */}
-          <div className="relative">
+        {/* Right Section - Navigation Tabs, Notifications & User */}
+        <div className="flex items-center space-x-8">
+          {/* Navigation Tabs (Desktop) */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navigationConfig.map((tab) => {
+              const IconComponent = iconMap[tab.icon as keyof typeof iconMap];
+              const isActive = activeTab === tab.id;
+              
+              return (
+                <button
+                  key={tab.id}
+                  data-tab={tab.id}
+                  onClick={() => handleTabClick(tab.id)}
+                  className={cn(
+                    'flex items-center space-x-2 px-2 py-1 transition-all duration-200',
+                    'focus:outline-none',
+                    isActive 
+                      ? 'text-gray-900 font-semibold border-b-2 border-blue-600' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  )}
+                  aria-label={tab.label}
+                >
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Notifications & User */}
+          <div className="flex items-center space-x-4">
+            {/* Notifications */}
+            <div className="relative">
             <button
               onClick={handleNotificationsToggle}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 relative"
               aria-label="Notifications"
             >
               <Bell className="w-5 h-5 text-gray-600" />
-              {/* Notification Badge */}
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-error-500 rounded-full text-xs text-white flex items-center justify-center">
-                3
-              </span>
             </button>
 
             {/* Notifications Dropdown */}
@@ -187,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
                         <div className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-900">
                               New program application received
@@ -201,7 +199,7 @@ export const Header: React.FC<HeaderProps> = ({
                     ))}
                   </div>
                   <div className="px-4 py-2 border-t border-gray-200">
-                    <button className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                    <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                       View all notifications
                     </button>
                   </div>
@@ -215,23 +213,14 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="relative">
               <button
                 onClick={handleUserMenuToggle}
-                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
                 aria-label="User menu"
               >
-                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                  <span className="text-primary-600 font-semibold text-sm">
+                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                  <span className="text-gray-600 font-semibold text-sm">
                     {getUserInitials(currentUser)}
                   </span>
                 </div>
-                <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-gray-900">
-                    {getUserDisplayName(currentUser)}
-                  </p>
-                  <p className="text-xs text-gray-500 capitalize">
-                    {getUserRole(currentUser)}
-                  </p>
-                </div>
-                <ChevronDown className="w-4 h-4 text-gray-600" />
               </button>
 
               {/* User Menu Dropdown */}
@@ -274,7 +263,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="border-t border-gray-200 py-1">
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-error-600 hover:bg-error-50 transition-colors duration-200"
+                        className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
                       >
                         <LogOut className="w-4 h-4" />
                         <span>Sign out</span>
@@ -288,39 +277,19 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Desktop Navigation Tabs - Hidden on mobile, visible on tablet+ */}
-      <nav className="hidden md:flex items-center justify-end space-x-1 px-4 pb-3">
-        {navigationConfig.map((tab) => {
-          const IconComponent = iconMap[tab.icon as keyof typeof iconMap];
-          const isActive = activeTab === tab.id;
-          
-          return (
-            <button
-              key={tab.id}
-              data-tab={tab.id}
-              onClick={() => handleTabClick(tab.id)}
-              className={cn(
-                'flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200',
-                'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                isActive 
-                  ? 'text-gray-900 border-b-2 border-blue-600' 
-                  : 'text-gray-900 hover:text-gray-700'
-              )}
-              aria-label={tab.label}
-            >
-              <IconComponent 
-                className={cn(
-                  'w-4 h-4 flex-shrink-0',
-                  isActive ? 'text-blue-600' : 'text-gray-500'
-                )} 
-              />
-              <span className="text-sm font-medium whitespace-nowrap">
-                {tab.label}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleMobileNav}
+        className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        aria-label="Toggle mobile navigation"
+      >
+        {isMobileNavOpen ? (
+          <X className="w-5 h-5 text-gray-600" />
+        ) : (
+          <Menu className="w-5 h-5 text-gray-600" />
+        )}
+      </button>
+    </div>
 
       {/* Mobile Navigation Overlay */}
       <AnimatePresence>

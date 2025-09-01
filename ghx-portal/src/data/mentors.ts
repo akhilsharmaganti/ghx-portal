@@ -7,7 +7,7 @@ export const mentorData: MentorCardProps[] = [
     name: 'Dr. Raju M',
     role: 'Clinical & HealthTech Advisor',
     company: 'Government of India Mentor',
-    photo: '/mentor-images/dr_raju.jpg',
+    photo: 'https://ui-avatars.com/api/?name=Dr+Raju+M&size=300x176&background=0D9488&color=fff',
     linkedinUrl: 'https://www.linkedin.com/in/dr-raju-m',
     expertise: ['Clinical Research', 'HealthTech', 'Government Relations'],
     description: 'Dr. Raju M is a seasoned clinical research expert with over 20 years of experience in healthcare technology and government relations. He specializes in helping healthtech startups navigate regulatory requirements and establish partnerships with government institutions.'
@@ -17,7 +17,7 @@ export const mentorData: MentorCardProps[] = [
     name: 'Vedanarayanan',
     role: 'Marketing Advisor',
     company: 'Ex- Growth Marketer, Healthify',
-    photo: '/mentor-images/ved.jpg',
+    photo: 'https://ui-avatars.com/api/?name=Vedanarayanan&size=300x176&background=3B82F6&color=fff',
     linkedinUrl: 'https://www.linkedin.com/in/vedanarayanan',
     expertise: ['Digital Marketing', 'Healthcare Marketing', 'Growth Strategy'],
     description: 'Vedanarayanan is a marketing expert with a focus on digital marketing and brand strategy. He has helped numerous startups grow their online presence and has extensive experience in healthcare marketing from his time at Healthify.'
@@ -27,7 +27,7 @@ export const mentorData: MentorCardProps[] = [
     name: 'Addison Appu',
     role: 'Investor Readiness & GTM',
     company: 'Advisor - Managing Partner, Thinkuvate',
-    photo: '/mentor-images/appu.jpg',
+    photo: 'https://ui-avatars.com/api/?name=Addison+Appu&size=300x176&background=059669&color=fff',
     linkedinUrl: 'https://www.linkedin.com/in/addison-appu',
     expertise: ['Investor Relations', 'Go-to-Market', 'Strategy'],
     description: 'Addison Appu is a strategic advisor specializing in investor readiness and go-to-market strategies. As Managing Partner at Thinkuvate, he helps startups prepare for funding rounds and develop effective market entry strategies.'
@@ -37,7 +37,7 @@ export const mentorData: MentorCardProps[] = [
     name: 'Shruti Jain',
     role: 'Investor Readiness - Founder',
     company: 'Prosperify Advisors',
-    photo: '/mentor-images/shruthi.jpg',
+    photo: 'https://ui-avatars.com/api/?name=Shruti+Jain&size=300x176&background=DC2626&color=fff',
     linkedinUrl: 'https://www.linkedin.com/in/shruti-jain',
     expertise: ['Investor Relations', 'Founder Coaching', 'Financial Advisory'],
     description: 'Shruti Jain is a founder coach and financial advisor who specializes in helping entrepreneurs prepare for investor meetings. She provides comprehensive guidance on financial planning, pitch deck creation, and investor relations.'
@@ -47,7 +47,7 @@ export const mentorData: MentorCardProps[] = [
     name: 'Zoheb Muhammad',
     role: 'Regulatory Advisor',
     company: 'Dr. Reddy\'s Laboratories',
-    photo: '/mentor-images/joheb.jpg',
+    photo: 'https://ui-avatars.com/api/?name=Zoheb+Muhammad&size=300x176&background=7C3AED&color=fff',
     linkedinUrl: 'https://www.linkedin.com/in/zoheb-muhammad',
     expertise: ['Regulatory Affairs', 'Pharmaceuticals', 'Compliance'],
     description: 'Zoheb Muhammad is a regulatory affairs expert with extensive experience in pharmaceuticals and compliance. He helps healthtech startups understand and navigate complex regulatory requirements in the healthcare industry.'
@@ -57,7 +57,7 @@ export const mentorData: MentorCardProps[] = [
     name: 'Ajay Rungta',
     role: 'GTM Mentor - Ex-Founding Team',
     company: 'Practo',
-    photo: '/mentor-images/ajay.jpg',
+    photo: 'https://ui-avatars.com/api/?name=Ajay+Rungta&size=300x176&background=F59E0B&color=fff',
     linkedinUrl: 'https://www.linkedin.com/in/ajay-rungta',
     expertise: ['Go-to-Market', 'Startup Growth', 'Healthcare'],
     description: 'Ajay Rungta is a go-to-market expert who was part of the founding team at Practo. He provides valuable insights on startup growth, healthcare market strategies, and building scalable business models.'

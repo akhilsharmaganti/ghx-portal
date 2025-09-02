@@ -93,38 +93,38 @@ export const DualMonthCalendar: React.FC<DualMonthCalendarProps> = ({
   };
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-6 max-w-3xl mx-auto ${className}`}>
       <h3 className="text-lg font-semibold text-gray-900">Select a Date</h3>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {months.map((month, monthIndex) => (
-          <div key={monthIndex} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div key={monthIndex} className="p-3">
             {/* Month Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <button
                 onClick={() => navigateMonth('prev')}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
+                <ChevronLeft className="w-4 h-4 text-gray-600" />
               </button>
               
-              <h4 className="text-lg font-medium text-gray-900">
+              <h4 className="text-base font-medium text-gray-900">
                 {monthNames[month.date.getMonth()]} {month.date.getFullYear()}
               </h4>
               
               <button
                 onClick={() => navigateMonth('next')}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
               >
-                <ChevronRight className="w-5 h-5 text-gray-600" />
+                <ChevronRight className="w-4 h-4 text-gray-600" />
               </button>
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 gap-0.5">
               {/* Day headers */}
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                <div key={day} className="text-center text-xs font-medium text-gray-500 py-1.5">
                   {day}
                 </div>
               ))}
@@ -136,14 +136,14 @@ export const DualMonthCalendar: React.FC<DualMonthCalendarProps> = ({
                   onClick={() => handleDateSelect(date)}
                   disabled={!isAvailable(date)}
                   className={`
-                    relative p-2 text-sm rounded-lg transition-all duration-200 min-h-[40px] flex items-center justify-center
+                    relative p-1.5 text-sm transition-all duration-200 min-h-[32px] flex items-center justify-center
                     ${isSelected(date)
-                      ? 'bg-blue-600 text-white font-medium shadow-md'
+                      ? 'bg-blue-500 text-white font-medium rounded-full w-8 h-8'
                       : isAvailable(date)
-                      ? 'text-gray-900 hover:bg-gray-100 cursor-pointer border-b-2 border-blue-300'
+                      ? 'text-gray-900 hover:bg-gray-50 cursor-pointer border-b border-blue-300 rounded-none'
                       : isCurrentMonth(date, month.date)
-                      ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-gray-300 cursor-not-allowed'
+                      ? 'text-gray-400 cursor-not-allowed rounded-none'
+                      : 'text-gray-300 cursor-not-allowed rounded-none'
                     }
                   `}
                 >

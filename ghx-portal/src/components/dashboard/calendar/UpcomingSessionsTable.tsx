@@ -61,7 +61,7 @@ export const UpcomingSessionsTable: React.FC<UpcomingSessionsTableProps> = ({ se
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      className="p-6"
     >
       {/* Header with Search and Filter */}
       <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
@@ -87,102 +87,105 @@ export const UpcomingSessionsTable: React.FC<UpcomingSessionsTableProps> = ({ se
         </div>
       </div>
 
-      {/* Sessions Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Profile
-              </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Mentor Name
-              </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Specialisation
-              </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Scheduled date and time
-              </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredSessions.map((session) => (
-              <tr key={session.id} className="hover:bg-gray-50 transition-colors">
-                {/* Profile Avatar */}
-                <td className="py-4 px-4">
-                  <Image
-                    src={session.mentorPhoto}
-                    alt={`${session.mentorName} profile`}
-                    width={32}
-                    height={32}
-                    className="w-8 h-8 rounded-full"
-                  />
-                </td>
-                
-                {/* Mentor Name */}
-                <td className="py-4 px-4">
-                  <span className="text-sm font-medium text-gray-900">
-                    {session.mentorName}
-                  </span>
-                </td>
-                
-                {/* Specialisation */}
-                <td className="py-4 px-4">
-                  <span className="text-sm text-gray-600">
-                    {session.specialisation}
-                  </span>
-                </td>
-                
-                {/* Scheduled Date and Time */}
-                <td className="py-4 px-4">
-                  <div className="text-sm text-gray-900">
-                    <div>{session.scheduledDate}</div>
-                    <div className="text-gray-600">{session.scheduledTime}</div>
-                  </div>
-                </td>
-                
-                {/* Actions */}
-                <td className="py-4 px-4">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleReschedule(session.id)}
-                      className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-                    >
-                      RESCHEDULE
-                    </button>
-                    <button
-                      onClick={() => handleCancel(session.id)}
-                      className="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
-                    >
-                      CANCEL
-                    </button>
-                  </div>
-                </td>
+      {/* Sessions Table Box */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        {/* Sessions Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Profile
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Mentor Name
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Specialisation
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Scheduled date and time
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Empty State */}
-      {filteredSessions.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Calendar className="w-8 h-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions found</h3>
-          <p className="text-gray-500">
-            {searchTerm || selectedStatus !== 'all' 
-              ? 'Try adjusting your search or filters.'
-              : 'You have no upcoming sessions scheduled.'
-            }
-          </p>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredSessions.map((session) => (
+                <tr key={session.id} className="hover:bg-gray-50 transition-colors">
+                  {/* Profile Avatar */}
+                  <td className="py-4 px-4">
+                    <Image
+                      src={session.mentorPhoto}
+                      alt={`${session.mentorName} profile`}
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  </td>
+                  
+                  {/* Mentor Name */}
+                  <td className="py-4 px-4">
+                    <span className="text-sm font-medium text-gray-900">
+                      {session.mentorName}
+                    </span>
+                  </td>
+                  
+                  {/* Specialisation */}
+                  <td className="py-4 px-4">
+                    <span className="text-sm text-gray-600">
+                      {session.specialisation}
+                    </span>
+                  </td>
+                  
+                  {/* Scheduled Date and Time */}
+                  <td className="py-4 px-4">
+                    <div className="text-sm text-gray-900">
+                      <div>{session.scheduledDate}</div>
+                      <div className="text-gray-600">{session.scheduledTime}</div>
+                    </div>
+                  </td>
+                  
+                  {/* Actions */}
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleReschedule(session.id)}
+                        className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+                      >
+                        RESCHEDULE
+                      </button>
+                      <button
+                        onClick={() => handleCancel(session.id)}
+                        className="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-blue-100 transition-colors"
+                      >
+                        CANCEL
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+
+        {/* Empty State */}
+        {filteredSessions.length === 0 && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-base font-medium text-gray-900 mb-2">No sessions found</h3>
+            <p className="text-sm text-gray-500">
+              {searchTerm || selectedStatus !== 'all' 
+                ? 'Try adjusting your search or filters.'
+                : 'You have no upcoming sessions scheduled.'
+              }
+            </p>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };

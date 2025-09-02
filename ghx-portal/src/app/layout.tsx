@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Manrope } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 const inter = Inter({ subsets: ['latin'] });
+const manrope = Manrope({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'GHX Innovation Exchange Portal',
-  description: 'Connect, innovate, and grow with the GHX Innovation Exchange platform',
-  keywords: 'innovation, startup, accelerator, mentorship, healthcare, technology',
-  authors: [{ name: 'GHX Team' }],
+  title: 'InnovationHub - Connect, Innovate, Grow',
+  description: 'Connect, innovate, and grow with InnovationHub - the premier platform for startups, mentors, and innovation',
+  keywords: 'innovation, startup, accelerator, mentorship, healthcare, technology, InnovationHub',
+  authors: [{ name: 'InnovationHub Team' }],
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 };
 
@@ -20,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full antialiased`}>
+      <body className={`${manrope.className} h-full antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>

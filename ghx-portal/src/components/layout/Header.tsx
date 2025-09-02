@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useAuth } from '@/contexts/AuthContext';
-import { navigationConfig, iconMap } from '@/config/navigation';
+import { navigationConfig } from '@/config/navigation';
 import { cn } from '@/utils';
 import { AppUser } from '@/types';
 import { 
@@ -16,8 +16,22 @@ import {
   ChevronDown,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  LayoutDashboard,
+  Calendar,
+  Users,
+  Rocket,
 } from 'lucide-react';
+import Image from 'next/image';
+
+// Icon mapping for mobile navigation only
+const iconMap = {
+  LayoutDashboard,
+  Rocket,
+  Calendar,
+  User,
+  Users,
+};
 
 interface HeaderProps {
   className?: string;
@@ -118,11 +132,18 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Single Line Navigation - Logo, Tabs, Notifications, User */}
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left Section - Logo */}
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">GHX</span>
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-8 flex items-center justify-center">
+            <Image
+              src="/logo/GLOBAL HEALTHX.png"
+              alt="InnovationHub Logo"
+              width={48}
+              height={32}
+              className="w-full h-full object-contain"
+              priority
+            />
           </div>
-          <span className="text-lg font-semibold text-gray-900">Portal</span>
+          <span className="text-xl font-bold text-gray-900">Innovation Hub</span>
         </div>
 
         {/* Right Section - Navigation Tabs, Notifications & User */}
@@ -130,7 +151,6 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Navigation Tabs (Desktop) */}
           <nav className="hidden md:flex items-center space-x-8">
             {navigationConfig.map((tab) => {
-              const IconComponent = iconMap[tab.icon as keyof typeof iconMap];
               const isActive = activeTab === tab.id;
               
               return (
@@ -147,7 +167,7 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                   aria-label={tab.label}
                 >
-                  <span className="text-sm font-medium whitespace-nowrap">
+                  <span className="text-base font-medium whitespace-nowrap">
                     {tab.label}
                   </span>
                 </button>
@@ -178,7 +198,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
                 >
                   <div className="px-4 py-2 border-b border-gray-200">
-                    <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+                    <h3 className="text-base font-semibold text-gray-900">Notifications</h3>
                   </div>
                   <div className="max-h-64 overflow-y-auto">
                     {/* Sample Notifications */}
@@ -187,10 +207,10 @@ export const Header: React.FC<HeaderProps> = ({
                         <div className="flex items-start space-x-3">
                           <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-900">
+                            <p className="text-base text-gray-900">
                               New program application received
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 mt-1">
                               2 hours ago
                             </p>
                           </div>
@@ -199,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
                     ))}
                   </div>
                   <div className="px-4 py-2 border-t border-gray-200">
-                    <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    <button className="text-base text-blue-600 hover:text-blue-700 font-medium">
                       View all notifications
                     </button>
                   </div>
@@ -217,7 +237,7 @@ export const Header: React.FC<HeaderProps> = ({
                 aria-label="User menu"
               >
                 <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                  <span className="text-gray-600 font-semibold text-sm">
+                  <span className="text-gray-600 font-semibold text-base">
                     {getUserInitials(currentUser)}
                   </span>
                 </div>
@@ -315,11 +335,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {/* Mobile Header */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">GHX</span>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-8 flex items-center justify-center">
+                    <Image
+                      src="/logo/GLOBAL HEALTHX.png"
+                      alt="InnovationHub Logo"
+                      width={40}
+                      height={32}
+                      className="w-full h-full object-contain"
+                      priority
+                    />
                   </div>
-                  <span className="text-lg font-semibold text-gray-900">Portal</span>
+                  <span className="text-lg font-bold text-gray-900">Innovation Hub</span>
                 </div>
                 <button
                   onClick={toggleMobileNav}

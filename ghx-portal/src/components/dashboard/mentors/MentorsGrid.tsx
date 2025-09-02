@@ -37,6 +37,7 @@ export const MentorsGrid: React.FC<MentorsGridProps> = ({
       justify-center
       items-start
       w-full
+      ${gap}
     `;
   };
 

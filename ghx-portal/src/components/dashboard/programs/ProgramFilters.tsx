@@ -29,7 +29,7 @@ export const ProgramFilters: React.FC<ProgramFiltersProps> = ({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Filter Programs</h3>
+        <h3 className="text-base font-semibold text-gray-900">Filter Programs</h3>
         {hasActiveFilters && (
           <Button
             variant="outline"

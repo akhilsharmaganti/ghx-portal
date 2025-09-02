@@ -72,37 +72,30 @@ export const MentorsTab: React.FC<MentorsTabProps> = ({
       >
         {/* Header Section - Left Aligned, No Description */}
         <div className="text-left mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">Mentors</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Mentors</h1>
         </div>
 
-        {/* Search and Filter Section - Horizontal Layout */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-center justify-between">
-          {/* Search Bar - Prominent positioning */}
-          <div className="relative flex-1 max-w-lg w-full">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search mentors"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full pl-12 pr-4 py-3 lg:py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base lg:text-lg"
-            />
-          </div>
+        {/* Search and Filter Section - Spanning full cards grid width */}
+        <div className="flex justify-center w-full">
+          <div className="flex items-center gap-4" style={{ width: 'calc(300px * 3 + 16px * 2)' }}>
+            {/* Search Bar - Full width of cards grid */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search mentors"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+              />
+            </div>
 
-          {/* Expertise Filter - Modern dropdown */}
-          <div className="flex items-center space-x-3 w-full lg:w-auto">
-            <Filter className="w-5 h-5 text-gray-500" />
-            <select
-              value={selectedExpertise}
-              onChange={(e) => handleExpertiseFilter(e.target.value)}
-              className="px-4 lg:px-6 py-3 lg:py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base lg:text-lg bg-white w-full lg:w-auto"
-            >
-              {expertiseOptions.map((expertise) => (
-                <option key={expertise} value={expertise}>
-                  {expertise === 'all' ? 'All Expertise' : expertise}
-                </option>
-              ))}
-            </select>
+            {/* Filter Icon - Right of search bar */}
+            <div className="flex items-center">
+              <button className="p-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <Filter className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -115,19 +108,17 @@ export const MentorsTab: React.FC<MentorsTabProps> = ({
           </div>
         ) : null}
 
-        {/* Mentors Grid - No gaps, compact design */}
-        <div className="w-full">
-          <MentorsGrid
-            mentors={filteredMentors}
-            gridCols={{
-              sm: 1,
-              md: 2,
-              lg: 3,
-              xl: 3
-            }}
-            gap="gap-0"
-          />
-        </div>
+        {/* Mentors Grid - Small gaps for better spacing */}
+        <MentorsGrid
+          mentors={filteredMentors}
+          gridCols={{
+            sm: 1,
+            md: 2,
+            lg: 3,
+            xl: 3
+          }}
+          gap="gap-4"
+        />
       </motion.div>
     </div>
   );

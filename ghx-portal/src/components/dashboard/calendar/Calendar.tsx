@@ -100,26 +100,17 @@ export const Calendar: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Sessions</h1>
-            <p className="text-gray-600 mt-2">
-              Manage your schedule and upcoming mentor sessions
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">My Sessions</h1>
+        </div>
+
         {/* Top Row: 2 Columns Side by Side */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Left Column - Calendar (1/3 width) */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Select Date</h2>
-              
+            <div className="p-6">
               {/* Calendar Header */}
               <div className="flex items-center justify-between mb-4">
                 <button
@@ -156,14 +147,14 @@ export const Calendar: React.FC = () => {
                     key={index}
                     onClick={() => handleDateSelect(date)}
                     className={`
-                      relative p-2 text-sm rounded-lg transition-all duration-200 min-h-[40px] flex items-center justify-center
+                      relative p-2 text-sm transition-all duration-200 min-h-[40px] flex items-center justify-center
                       ${isSelected(date) 
-                        ? 'bg-blue-600 text-white font-medium shadow-md' 
+                        ? 'bg-blue-500 text-white font-medium rounded-full w-8 h-8' 
                         : isToday(date)
-                        ? 'bg-blue-100 text-blue-800 font-medium border-2 border-blue-300'
+                        ? 'bg-blue-100 text-blue-800 font-medium border-b border-blue-300 rounded-none'
                         : isCurrentMonth(date)
-                        ? 'text-gray-900 hover:bg-gray-100'
-                        : 'text-gray-400'
+                        ? 'text-gray-900 hover:bg-gray-50 border-b border-blue-300 rounded-none'
+                        : 'text-gray-400 rounded-none'
                       }
                     `}
                   >
@@ -181,30 +172,7 @@ export const Calendar: React.FC = () => {
 
           {/* Right Column - Mentor Profile Only (2/3 width) */}
           <div className="lg:col-span-2">
-            {/* Selected Date Display */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <CalendarIcon className="w-5 h-5 text-gray-500" />
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {selectedDateInfo.dayName}, {selectedDateInfo.month} {selectedDateInfo.day}, {selectedDateInfo.year}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {selectedDateInfo.eventCount} event{selectedDateInfo.eventCount !== 1 ? 's' : ''} on this date
-                    </p>
-                  </div>
-                </div>
-                
-                {selectedEvents.length > 0 && (
-                  <button
-                    onClick={() => setSelectedEvents([])}
-                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                  >
-                    <X className="w-4 h-4 text-gray-500" />
-                  </button>
-                )}
-              </div>
+
 
               {/* Event Details Card */}
               {selectedEvents.length > 0 && (
@@ -216,8 +184,8 @@ export const Calendar: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900">{event.title}</h4>
-                        <p className="text-sm text-gray-600">{event.description}</p>
-                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                        <p className="text-xs text-gray-600">{event.description}</p>
+                        <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                           <div className="flex items-center space-x-1">
                             <Clock className="w-4 h-4" />
                             <span>{new Date(event.start).toLocaleTimeString('en-US', { 
@@ -237,7 +205,6 @@ export const Calendar: React.FC = () => {
                   ))}
                 </div>
               )}
-            </div>
 
             {/* Mentor Profile Panel */}
             <MentorProfilePanel mentor={featuredMentor} />

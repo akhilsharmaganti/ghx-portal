@@ -3,9 +3,18 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDashboardStore } from '@/store/dashboardStore';
-import { navigationConfig, iconMap } from '@/config/navigation';
+import { navigationConfig } from '@/config/navigation';
 import { cn } from '@/utils';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, Calendar, User, Users, Rocket } from 'lucide-react';
+
+// Icon mapping for sidebar navigation
+const iconMap = {
+  LayoutDashboard,
+  Rocket,
+  Calendar,
+  User,
+  Users,
+};
 
 interface SidebarProps {
   className?: string;

@@ -3,19 +3,21 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Breadcrumb } from '@/components/ui/Breadcrumb';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { MentorProfilePanel } from '@/components/dashboard/calendar/MentorProfilePanel';
 import { DualMonthCalendar } from '@/components/dashboard/calendar/DualMonthCalendar';
 import { TimeSlotSelector, TimeSlot } from '@/components/dashboard/calendar/TimeSlotSelector';
 import { ActionButtons, ActionButton } from '@/components/ui/ActionButtons';
 import { getMentorById } from '@/data/mentors';
 import { getFeaturedMentor } from '@/data/calendar';
+import { useDashboardStore } from '@/store/dashboardStore';
 
 // Single Responsibility: Session booking page with mentor profile and calendar
 export default function SessionBookingPage() {
   const router = useRouter();
   const params = useParams();
   const mentorId = params.mentorId as string;
+  const { setActiveTab } = useDashboardStore();
 
   // State management
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -118,7 +120,8 @@ export default function SessionBookingPage() {
 
   // Handle cancel
   const handleCancel = () => {
-    router.push('/dashboard?tab=mentors');
+    setActiveTab('mentors');
+    router.push('/dashboard');
   };
 
   // Handle confirm and schedule
@@ -136,8 +139,9 @@ export default function SessionBookingPage() {
       timeSlot: selectedTimeSlot
     });
 
-    // Redirect to calendar page
-    router.push('/dashboard?tab=calendar');
+    // Set calendar tab as active and redirect to dashboard
+    setActiveTab('calendar');
+    router.push('/dashboard');
   };
 
   // Action buttons
@@ -156,80 +160,69 @@ export default function SessionBookingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Book Session</h1>
-            <p className="text-gray-600 mt-2">
-              Schedule a session with {mentor.name}
-            </p>
+    <DashboardLayout>
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Book Session</h1>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'Mentors', href: '/dashboard?tab=mentors' },
-              { label: 'Book Session' }
-            ]}
-          />
-        </div>
-
-        {/* Mentor Profile Section - Top */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
-          <MentorProfilePanel mentor={mentor} />
-        </motion.div>
-
-        {/* Session Booking Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="space-y-8"
-        >
-          {/* Dual Month Calendar */}
-          <DualMonthCalendar
-            onDateSelect={handleDateSelect}
-            selectedDate={selectedDate || undefined}
-            availableDates={availableDates}
-          />
-
-          {/* Time Slot Selection */}
-          {selectedDate && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <TimeSlotSelector
-                slots={timeSlots}
-                onSlotSelect={handleTimeSlotSelect}
-                duration={60}
-              />
-            </motion.div>
-          )}
-
-          {/* Action Buttons */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Mentor Profile Section - Top */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="pt-8 border-t border-gray-200"
+            transition={{ duration: 0.5 }}
+            className="mb-8"
           >
-            <ActionButtons buttons={actionButtons} />
+            <MentorProfilePanel mentor={mentor} />
           </motion.div>
-        </motion.div>
+
+          {/* Session Booking Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="space-y-8"
+          >
+            {/* Dual Month Calendar */}
+            <DualMonthCalendar
+              onDateSelect={handleDateSelect}
+              selectedDate={selectedDate || undefined}
+              availableDates={availableDates}
+            />
+
+            {/* Time Slot Selection */}
+            {selectedDate && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <TimeSlotSelector
+                  slots={timeSlots}
+                  onSlotSelect={handleTimeSlotSelect}
+                  duration={60}
+                />
+              </motion.div>
+            )}
+
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="pt-8 border-t border-gray-200"
+            >
+              <ActionButtons buttons={actionButtons} />
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

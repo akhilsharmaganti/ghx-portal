@@ -82,7 +82,7 @@ export const MentorCard: React.FC<MentorCardProps> = ({
       className={`
         bg-white rounded-xl shadow-lg border border-gray-100 
         overflow-hidden group hover:shadow-xl transition-all duration-300
-        w-[300px] h-[434px] flex flex-col m-0 p-0
+        w-[300px] min-h-[434px] flex flex-col m-0 p-0
         ${className}
       `}
       role="article"
@@ -96,18 +96,15 @@ export const MentorCard: React.FC<MentorCardProps> = ({
               alt={`${name} profile photo`}
               width={300}
               height={176}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain bg-gray-50"
               style={{ borderRadius: '12px' }}
               priority
               onError={handleImageError}
               onLoad={() => setImageError(false)}
             />
           ) : (
-            <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-gray-500 text-center p-4">
-              <div>
-                <div className="text-3xl sm:text-4xl mb-2">👤</div>
-                <div className="text-xs sm:text-sm font-medium">{name}</div>
-              </div>
+            <div className="w-full h-full bg-gray-100 rounded-xl flex items-center justify-center">
+              {/* Empty clean space - no text or icons */}
             </div>
           )}
         </div>
@@ -124,12 +121,12 @@ export const MentorCard: React.FC<MentorCardProps> = ({
         </button>
       </div>
 
-      {/* Content Section - BOTTOM with compact spacing */}
-      <div className="p-4 flex-1 flex flex-col justify-between">
+      {/* Content Section - BOTTOM with proper spacing */}
+      <div className="p-4 flex-1 flex flex-col justify-between min-h-0">
         {/* Top Content */}
-        <div>
+        <div className="flex-1 min-h-0">
           {/* Name */}
-          <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
+          <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
             {name}
           </h3>
 
@@ -139,7 +136,7 @@ export const MentorCard: React.FC<MentorCardProps> = ({
           </p>
 
           {/* Company */}
-          <p className="text-xs text-gray-600 mb-3">
+          <p className="text-sm text-gray-600 mb-3">
             {company}
           </p>
 
@@ -170,8 +167,8 @@ export const MentorCard: React.FC<MentorCardProps> = ({
           </p>
         </div>
 
-        {/* Action Button */}
-        <div className="flex justify-end">
+        {/* Action Button - Always at bottom */}
+        <div className="flex justify-end mt-4 flex-shrink-0">
           <button
             onClick={handleBookSession}
             className="inline-flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md text-xs"

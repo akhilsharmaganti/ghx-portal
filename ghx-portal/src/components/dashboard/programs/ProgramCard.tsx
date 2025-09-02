@@ -94,149 +94,116 @@ export const ProgramCard: React.FC<ProgramCardExtendedProps> = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ y: -2, scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.2 }}
       className={cn(
-        'group relative overflow-hidden rounded-xl border shadow-sm transition-all duration-300 hover:shadow-lg',
-        styles.card,
+        'bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 w-[300px] min-h-[434px] flex flex-col m-0 p-0',
         className
       )}
+      role="article"
     >
-      {/* Media Section */}
-      <div className="relative h-48 overflow-hidden">
-        {image ? (
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gray-100">
-            <ImageIcon className="h-12 w-12 text-gray-400" />
-          </div>
-        )}
+      {/* Program Image Section - TOP with exact dimensions like MentorCard */}
+      <div className="relative w-full h-[176px] bg-gradient-to-br from-blue-50 to-indigo-100 flex-shrink-0">
+        <div className="absolute inset-0 flex items-center justify-center">
+          {image ? (
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover"
+              style={{ borderRadius: '12px' }}
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-gray-500 text-center p-4">
+              <div>
+                <div className="text-3xl sm:text-4xl mb-2">🚀</div>
+                <div className="text-sm sm:text-base font-medium">{title}</div>
+              </div>
+            </div>
+          )}
+        </div>
         
-        {/* Badge */}
+        {/* Status Badge - Top Left */}
         <div className={cn(
-          'absolute top-3 left-3 flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium',
+          'absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium',
           styles.badge
         )}>
-          {getVariantIcon()}
-          <span>{getVariantBadge()}</span>
+          {getVariantBadge()}
         </div>
 
-        {/* Theme Badge */}
-        {theme && (
-          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
-            {theme}
-          </div>
-        )}
+        {/* Category Badge - Top Right */}
+        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
+          {category}
+        </div>
       </div>
 
-      {/* Content Section */}
-      <div className="p-4 space-y-3">
-        {/* Title and Category */}
-        <div>
-          <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors duration-300 mb-1">
+      {/* Content Section - BOTTOM with proper spacing like MentorCard */}
+      <div className="p-4 flex-1 flex flex-col justify-between min-h-0">
+        {/* Top Content */}
+        <div className="flex-1 min-h-0">
+          {/* Title */}
+          <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
             {title}
           </h3>
-          <p className="text-sm text-gray-600 capitalize">{category}</p>
-        </div>
 
-        {/* Description */}
-        <p className="text-sm text-gray-700 line-clamp-2">{shortDescription}</p>
+          {/* Category */}
+          <p className="text-sm font-semibold text-gray-700 mb-1">
+            {category}
+          </p>
 
-        {/* Why Join Us (for open application and upcoming) */}
-        {variant !== 'ongoing' && whyJoinUs && (
-          <div className="bg-white/50 rounded-lg p-2">
-            <p className="text-xs text-gray-600 font-medium mb-1">Why Join Us:</p>
-            <p className="text-xs text-gray-700 line-clamp-2">{whyJoinUs}</p>
-          </div>
-        )}
+          {/* Duration */}
+          <p className="text-sm text-gray-600 mb-3">
+            Duration: {duration}
+          </p>
 
-        {/* Selected Startups (for ongoing programs) */}
-        {variant === 'ongoing' && selectedStartupsCount > 0 && (
-          <div className="bg-white/50 rounded-lg p-2">
-            <p className="text-xs text-gray-600 font-medium mb-1">Selected Startups:</p>
-            <p className="text-xs text-gray-700">{selectedStartupsCount} startups participating</p>
-          </div>
-        )}
-
-        {/* Features */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-1">
-              <Clock className="w-3 h-3" />
-              <span>{duration}</span>
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div className="mb-3">
+              <div className="flex flex-wrap gap-1.5">
+                {tags.slice(0, 2).map((tag, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {tags.length > 2 && (
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                    +{tags.length - 2} more
+                  </span>
+                )}
+              </div>
             </div>
+          )}
+
+          {/* Description */}
+          <p className="text-xs text-gray-600 leading-relaxed mb-3 line-clamp-2">
+            {shortDescription}
+          </p>
+
+          {/* Participants Info */}
+          <div className="flex items-center space-x-4 text-xs text-gray-500 mb-3">
             <div className="flex items-center space-x-1">
               <Users className="w-3 h-3" />
               <span>{currentParticipants}/{maxParticipants}</span>
             </div>
-          </div>
-          
-          {/* Additional Features */}
-          <div className="flex items-center space-x-2">
-            {hasTimeline && <Calendar className="w-3 h-3 text-blue-500" />}
-            {hasTestimonials && <Star className="w-3 h-3 text-yellow-500" />}
+            <div className="flex items-center space-x-1">
+              <Clock className="w-3 h-3" />
+              <span>{duration}</span>
+            </div>
           </div>
         </div>
 
-        {/* Tags */}
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {tags.slice(0, 3).map((tag, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-white/70 text-xs text-gray-600 rounded-full border"
-              >
-                {tag}
-              </span>
-            ))}
-            {tags.length > 3 && (
-              <span className="px-2 py-1 bg-white/70 text-xs text-gray-600 rounded-full border">
-                +{tags.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-2 pt-2">
-          {/* View Details Button (All variants) */}
+        {/* Action Button - Always at bottom like MentorCard */}
+        <div className="flex justify-end mt-4 flex-shrink-0">
           <button
             onClick={() => onViewDetails?.(id)}
-            className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md text-xs"
           >
-            View Details
+            <Calendar className="w-3 h-3" />
+            <span>View Details</span>
           </button>
-
-          {/* Variant-specific Actions */}
-          {variant === 'open-application' && (
-            <button
-              onClick={() => onApply?.(id)}
-              className={cn(
-                'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                styles.button
-              )}
-            >
-              Apply Now
-            </button>
-          )}
-
-          {variant === 'upcoming' && (
-            <button
-              onClick={() => onConnect?.(id)}
-              className={cn(
-                'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                styles.button
-              )}
-            >
-              Connect
-            </button>
-          )}
         </div>
       </div>
     </motion.div>

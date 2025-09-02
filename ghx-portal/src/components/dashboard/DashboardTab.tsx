@@ -9,7 +9,7 @@ export const DashboardTab: React.FC = () => {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900">
           Welcome, {currentUser?.firstName || 'User'}!
         </h1>
       </div>

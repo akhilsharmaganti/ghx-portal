@@ -169,7 +169,7 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
                     )}
                   </div>
                   
-                  <h1 className="text-2xl font-bold mb-1">{program.title}</h1>
+                  <h1 className="text-xl font-bold mb-1">{program.title}</h1>
                   <p className="text-sm text-gray-200 max-w-2xl">{program.shortDescription}</p>
                 </div>
               </div>
@@ -221,22 +221,22 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                       <div className="bg-gray-50 rounded-lg p-3 text-center">
                         <Clock className="w-5 h-5 text-gray-600 mx-auto mb-1" />
-                        <p className="text-lg font-bold text-gray-900">{program.duration}</p>
+                        <p className="text-base font-bold text-gray-900">{program.duration}</p>
                         <p className="text-xs text-gray-600">Duration</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-3 text-center">
                         <Calendar className="w-5 h-5 text-gray-600 mx-auto mb-1" />
-                        <p className="text-lg font-bold text-gray-900">{formatDate(program.startDate)}</p>
+                        <p className="text-base font-bold text-gray-900">{formatDate(program.startDate)}</p>
                         <p className="text-xs text-gray-600">Start Date</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-3 text-center">
                         <Users className="w-5 h-5 text-gray-600 mx-auto mb-1" />
-                        <p className="text-lg font-bold text-gray-900">{program.currentParticipants}/{program.maxParticipants}</p>
+                        <p className="text-base font-bold text-gray-900">{program.currentParticipants}/{program.maxParticipants}</p>
                         <p className="text-xs text-gray-600">Participants</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-3 text-center">
                         <MapPin className="w-5 h-5 text-gray-600 mx-auto mb-2" />
-                        <p className="text-lg font-bold text-gray-900">{program.category}</p>
+                        <p className="text-base font-bold text-gray-900">{program.category}</p>
                         <p className="text-xs text-gray-600">Type</p>
                       </div>
                     </div>
@@ -244,7 +244,7 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
                     {/* Why Join Us */}
                     {program.whyJoinUs && (
                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center">
+                        <h3 className="text-base font-bold text-gray-900 mb-2 flex items-center">
                           <Star className="w-4 h-4 text-blue-600 mr-2" />
                           Why Join Us
                         </h3>
@@ -254,7 +254,7 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
 
                     {/* Media Gallery */}
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-3">Program Media</h3>
+                      <h3 className="text-base font-bold text-gray-900 mb-3">Program Media</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {mockMedia.map((media, index) => (
                           <div
@@ -286,7 +286,7 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
                     {/* Tags */}
                     {program.tags.length > 0 && (
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-3">Tags</h3>
+                        <h3 className="text-base font-bold text-gray-900 mb-3">Tags</h3>
                         <div className="flex flex-wrap gap-2">
                           {program.tags.map((tag, index) => (
                             <span
@@ -304,7 +304,7 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
 
                 {activeTab === 'timeline' && (
                   <div className="space-y-3">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">Program Timeline</h3>
+                    <h3 className="text-base font-bold text-gray-900 mb-3">Program Timeline</h3>
                     {mockTimeline.map((event, index) => (
                       <div key={event.id} className="flex items-start space-x-4">
                         <div className={cn(
@@ -330,7 +330,7 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
 
                 {activeTab === 'testimonials' && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">What Participants Say</h3>
+                    <h3 className="text-base font-bold text-gray-900 mb-3">What Participants Say</h3>
                     {mockTestimonials.map((testimonial) => (
                       <div key={testimonial.id} className="bg-gray-50 rounded-xl p-4">
                         <div className="flex items-start space-x-3">
@@ -373,7 +373,7 @@ export const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
 
                 {activeTab === 'startups' && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">Selected Startups</h3>
+                    <h3 className="text-base font-bold text-gray-900 mb-3">Selected Startups</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {mockStartups.map((startup) => (
                         <div key={startup.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-shadow">

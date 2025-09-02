@@ -33,7 +33,7 @@ export const MentorProfilePanel: React.FC<MentorProfileProps> = ({ mentor }) => 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6"
+      className="p-6 mb-6"
     >
       {/* Mentor Avatar and Basic Info */}
       <div className="flex items-start space-x-4 mb-6">
@@ -57,8 +57,8 @@ export const MentorProfilePanel: React.FC<MentorProfileProps> = ({ mentor }) => 
         </div>
         
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-gray-900 mb-1">{mentor.name}</h3>
-          <p className="text-lg font-semibold text-gray-700 mb-2">{mentor.role}</p>
+          <h3 className="text-lg font-bold text-gray-900 mb-1">{mentor.name}</h3>
+          <p className="text-sm font-semibold text-gray-700 mb-2">{mentor.role}</p>
           <p className="text-sm text-gray-600 mb-3">{mentor.company}</p>
           
           {/* Expertise Tags */}

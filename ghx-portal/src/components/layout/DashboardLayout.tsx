@@ -61,7 +61,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
       {/* Main Content - Full Width */}
       <main className={cn(
-        'p-4 lg:p-6',
         'min-h-[calc(100vh-8rem)]', // Adjusted for header height
         'w-full', // Full width
         className

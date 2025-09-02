@@ -47,7 +47,7 @@ export const ProgramsGrid: React.FC<ProgramsGridProps> = ({
   if (!programs || programs.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-gray-500 text-lg">
+        <div className="text-gray-500 text-base">
           No programs available at the moment.
         </div>
         <p className="text-gray-400 text-sm mt-2">

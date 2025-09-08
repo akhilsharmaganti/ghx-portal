@@ -12,8 +12,7 @@
     "type-check": "tsc --noEmit",
     "setup:db": "tsx scripts/setup-database.ts",
     "db:studio": "prisma studio",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push"
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@firebase/messaging": "^0.12.23",
